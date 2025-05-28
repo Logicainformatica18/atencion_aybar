@@ -4,8 +4,9 @@
     use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ArticleController;
- 
+
 Route::get('/', function () {
     return redirect("dashboard");
     //return Inertia::render('welcome');
@@ -82,9 +83,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/transfers/{id}/notify', [TransferController::class, 'notify']);
 
 
-
-
- 
+    Route::get('/supports/fetch', [SupportController::class, 'fetchPaginated'])->name('supports.fetch');
+    Route::get('/supports', [SupportController::class, 'index'])->name('supports.index');
+    Route::post('/supports', [SupportController::class, 'store']);
+    Route::get('/supports/{id}', [SupportController::class, 'show']);
+    Route::put('/supports/{id}', [SupportController::class, 'update']);
+    Route::delete('/supports/{id}', [SupportController::class, 'destroy']);
+    Route::post('/supports/bulk-delete', [SupportController::class, 'bulkDelete']);
 
 
 });
