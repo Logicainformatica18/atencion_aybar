@@ -12,15 +12,7 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
-    },{
-        title: 'Transferencias',
-        href: '/transfers',
-        icon: Folder, // Puedes cambiar esto por otro ícono si deseas
-    },{
-        title: 'Productos',
-        href: '/products',
-        icon: Folder, // Puedes cambiar esto por otro ícono si deseas
-    },{
+    }  ,{
         title: 'Usuarios',
         href: '/users',
         icon: Folder, // Puedes cambiar esto por otro ícono si deseas

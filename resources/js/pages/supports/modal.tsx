@@ -1,5 +1,3 @@
-// resources/js/pages/supports/SupportModal.tsx
-
 import { useEffect, useState } from 'react';
 import {
   Dialog,
@@ -14,6 +12,26 @@ import { Label } from '@/components/ui/label';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import ClientSearch from './clientSearch';
+
+
+const getNowPlusHours = (plus = 0) => {
+  const now = new Date();
+
+  // Ajustar a hora local real (corrige si estás en UTC u otra zona)
+  now.setHours(now.getHours() + plus);
+
+  // Convertir a YYYY-MM-DDTHH:MM
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const yyyy = now.getFullYear();
+  const MM = pad(now.getMonth() + 1);
+  const dd = pad(now.getDate());
+  const hh = pad(now.getHours());
+  const mm = pad(now.getMinutes());
+
+  return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+};
+
 
 export default function SupportModal({
   open,
@@ -26,22 +44,30 @@ export default function SupportModal({
   onSaved: (support: any) => void;
   supportToEdit?: any;
 }) {
-  const [formData, setFormData] = useState({
-    subject: '',
-    description: '',
-    priority: 'Normal',
-    type: 'Consulta',
-    status: 'Pendiente',
-    cellphone: '',
-    created_by: 1, // Deberías reemplazar con el ID del usuario autenticado
-    client_id: 1,   // O elegir desde un dropdown si se quiere
-    area_id: null,
-  });
+const [formData, setFormData] = useState({
+  subject: '',
+  description: '',
+  priority: 'Normal',
+  type: 'Consulta',
+  status: 'Pendiente',
+  cellphone: '',
+  created_by: 1,
+  client_id: 1,
+  area_id: '',
+  reservation_time: getNowPlusHours(0),
+  attended_at: getNowPlusHours(1),
+  derived: '',
+});
+
 
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [clientQuery, setClientQuery] = useState('');
+ const [areas, setAreas] = useState<{ id: number; name: string }[]>([]);
+
+
 
   useEffect(() => {
     if (supportToEdit) {
@@ -55,16 +81,23 @@ export default function SupportModal({
         created_by: supportToEdit.created_by || 1,
         client_id: supportToEdit.client_id || 1,
         area_id: supportToEdit.area_id || null,
+        reservation_time: supportToEdit.reservation_time || '',
+        attended_at: supportToEdit.attended_at || '',
+        derived: supportToEdit.derived || '',
       });
+      setClientQuery(supportToEdit.client?.names || '');
       if (supportToEdit.attachment) {
         setPreview(`/attachments/${supportToEdit.attachment}`);
       }
     } else {
       handleReset();
     }
+      axios.get('/areas/all')
+    .then((res) => setAreas(res.data))
+    .catch((err) => console.error('Error al cargar áreas:', err));
   }, [supportToEdit]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+ 
+  const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -124,8 +157,12 @@ export default function SupportModal({
       cellphone: '',
       created_by: 1,
       client_id: 1,
-      area_id: null,
+      area_id: '',
+       reservation_time: getNowPlusHours(0),
+  attended_at: getNowPlusHours(1),
+      derived: '',
     });
+    setClientQuery('');
     setFile(null);
     setPreview(null);
   };
@@ -147,6 +184,38 @@ export default function SupportModal({
         )}
 
         <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">Cliente</Label>
+            <ClientSearch
+              query={clientQuery}
+              setQuery={setClientQuery}
+              onSelect={(client) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  client_id: client.id,
+                }));
+                setClientQuery(client.names);
+              }}
+            />
+          </div>
+
+<div className="grid grid-cols-4 items-center gap-4">
+  <Label htmlFor="area_id" className="text-right">Área</Label>
+  <select
+    name="area_id"
+    value={formData.area_id || ''}
+    onChange={handleChange}
+    className="col-span-3 border rounded px-3 py-2 text-sm"
+  >
+    <option value="">Seleccionar área</option>
+    {areas.map((area) => (
+      <option key={area.id} value={area.id}>
+        {area.name}
+      </option>
+    ))}
+  </select>
+</div>
+
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="subject" className="text-right">Asunto</Label>
             <Input name="subject" value={formData.subject} onChange={handleChange} className="col-span-3" />
@@ -187,6 +256,21 @@ export default function SupportModal({
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="cellphone" className="text-right">Celular</Label>
             <Input name="cellphone" value={formData.cellphone} onChange={handleChange} className="col-span-3" />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="reservation_time" className="text-right">Reserva</Label>
+            <Input type="datetime-local" name="reservation_time" value={formData.reservation_time} onChange={handleChange} className="col-span-3" />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="attended_at" className="text-right">Atendido</Label>
+            <Input type="datetime-local" name="attended_at" value={formData.attended_at} onChange={handleChange} className="col-span-3" />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="derived" className="text-right">Derivado</Label>
+            <Input name="derived" value={formData.derived} onChange={handleChange} className="col-span-3" />
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">

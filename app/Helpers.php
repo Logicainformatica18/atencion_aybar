@@ -12,19 +12,24 @@ function datebirth($day, $month, $year)
     $datebirth =    $year . "-" . $month . "-" . $day;
     return $datebirth;
 }
-function fileStore($photo, $directory)
+function fileStore($file, $directory, $prefix = 'imagen')
 {
-    if ($photo != "") {
-        $uniqueId = uniqid(); // Genera un identificador único
+    if ($file) {
+        $timestamp = time(); // Ej: 1716923800
+        $extension = $file->getClientOriginalExtension(); // jpg, png, pdf, etc.
 
+        // Nombre nuevo: soporte_1716923800.jpg
+        $filename = "{$prefix}_{$timestamp}.{$extension}";
 
-        //get imageName
-        $imageName =  time() . "_" .$uniqueId. $photo->getClientOriginalName();
-        //move imageFile
-        $photo->move($directory, $imageName);
-        return    $imageName;
+        // Guardar archivo
+        $file->move(public_path($directory), $filename);
+
+        return $filename;
     }
+
+    return null;
 }
+
 function fileUpdate($newFile, $directory, $oldFile = null)
 {
     if ($oldFile) {

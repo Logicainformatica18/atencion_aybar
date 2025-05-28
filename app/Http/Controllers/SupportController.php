@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Support;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class SupportController extends Controller
@@ -34,10 +35,11 @@ class SupportController extends Controller
         $this->validateSupport($request);
 
         $support = new Support();
-        $support->fill($request->except('attachment'));
-
+        $support->fill($request->except('attachment', 'created_by'));
+        // ✅ Asignar usuario autenticado
+        $support->created_by = Auth::id();
         if ($request->hasFile('attachment')) {
-            $support->attachment = fileStore($request->file('attachment'), 'attachments');
+            $support->attachment = fileStore($request->file('attachment'), 'uploads');
         }
 
         $support->save();

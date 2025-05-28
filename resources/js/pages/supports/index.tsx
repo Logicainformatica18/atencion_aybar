@@ -5,11 +5,11 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Paintbrush, Trash2 } from 'lucide-react';
 import SupportModal from './modal';
+import HourglassLoader from '@/components/HourglassLoader';
 
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Soportes', href: '/supports' },
 ];
-
 type Support = {
   id: number;
   subject: string;
@@ -22,7 +22,13 @@ type Support = {
   attended_at?: string;
   derived?: string;
   cellphone?: string;
+  created_at?: string;
+  updated_at?: string;
+  area_id?: number;
+  created_by?: number;
+  client_id?: number;
 };
+
 
 type Pagination<T> = {
   data: T[];
@@ -40,6 +46,8 @@ export default function Supports() {
   const [showModal, setShowModal] = useState(false);
   const [editSupport, setEditSupport] = useState<Support | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+const [editingId, setEditingId] = useState<number | null>(null);
+const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const handleSupportSaved = (saved: Support) => {
     setSupports((prev) => {
@@ -115,7 +123,16 @@ export default function Supports() {
                 </th>
                 <th className="px-4 py-2">Acciones</th>
                 <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">Asunto</th>
+           
+<th className="px-4 py-2">Área</th>
+<th className="px-4 py-2">Cliente</th>
+<th className="px-4 py-2">Creado por</th>
+<th className="px-4 py-2">Reserva</th>
+<th className="px-4 py-2">Atendido</th>
+<th className="px-4 py-2">Derivado</th>
+ 
+ 
+       
                 <th className="px-4 py-2">Prioridad</th>
                 <th className="px-4 py-2">Tipo</th>
                 <th className="px-4 py-2">Estado</th>
@@ -140,31 +157,65 @@ export default function Supports() {
                     />
                   </td>
                   <td className="px-4 py-2 text-sm space-x-2">
-                    <button
-                      onClick={() => fetchSupport(support.id)}
-                      className="text-blue-600 hover:underline dark:text-blue-400 flex items-center gap-1"
-                    >
-                      <Paintbrush className="w-4 h-4" /> Editar
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if (confirm(`¿Eliminar soporte "${support.subject}"?`)) {
-                          try {
-                            await axios.delete(`/supports/${support.id}`);
-                            setSupports((prev) => prev.filter((s) => s.id !== support.id));
-                          } catch (e) {
-                            alert('Error al eliminar');
-                            console.error(e);
-                          }
-                        }
-                      }}
-                      className="text-red-600 hover:underline dark:text-red-400 flex items-center gap-1"
-                    >
-                      <Trash2 className="w-4 h-4" /> Eliminar
-                    </button>
+               <button
+  onClick={async () => {
+    setEditingId(support.id);
+    await fetchSupport(support.id);
+    setEditingId(null);
+  }}
+  disabled={editingId === support.id}
+  className="text-blue-600 hover:underline dark:text-blue-400 flex items-center gap-1"
+>
+  {editingId === support.id ? (
+    <HourglassLoader />
+  ) : (
+    <>
+      <Paintbrush className="w-4 h-4" /> Editar
+    </>
+  )}
+</button>
+
+
+     <button
+  onClick={async () => {
+    if (confirm(`¿Eliminar soporte "${support.subject}"?`)) {
+      try {
+        setDeletingId(support.id);
+        await axios.delete(`/supports/${support.id}`);
+        setSupports((prev) => prev.filter((s) => s.id !== support.id));
+      } catch (e) {
+        alert('Error al eliminar');
+        console.error(e);
+      } finally {
+        setDeletingId(null);
+      }
+    }
+  }}
+  disabled={deletingId === support.id}
+  className="text-red-600 hover:underline dark:text-red-400 flex items-center gap-1"
+>
+  {deletingId === support.id ? (
+    <HourglassLoader />
+  ) : (
+    <>
+      <Trash2 className="w-4 h-4" /> Eliminar
+    </>
+  )}
+</button>
+
+
                   </td>
                   <td className="px-4 py-2">{support.id}</td>
-                  <td className="px-4 py-2">{support.subject}</td>
+                
+<td className="px-4 py-2">{support.area_id}</td>
+<td className="px-4 py-2">{support.client_id}</td>
+<td className="px-4 py-2">{support.created_by}</td>
+<td className="px-4 py-2">{support.reservation_time}</td>
+<td className="px-4 py-2">{support.attended_at}</td>
+<td className="px-4 py-2">{support.derived}</td>
+ 
+
+              
                   <td className="px-4 py-2">{support.priority}</td>
                   <td className="px-4 py-2">{support.type}</td>
                   <td className="px-4 py-2">{support.status}</td>

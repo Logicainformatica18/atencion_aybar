@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\AreaController;
 
 Route::get('/', function () {
     return redirect("dashboard");
@@ -91,6 +93,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/supports/{id}', [SupportController::class, 'destroy']);
     Route::post('/supports/bulk-delete', [SupportController::class, 'bulkDelete']);
 
+Route::get('/clients/search', [ClientController::class, 'searchByName']);
+// routes/web.php
+Route::get('/areas/all', [AreaController::class, 'getAllEnabled']);
+
+ 
 
 });
 
