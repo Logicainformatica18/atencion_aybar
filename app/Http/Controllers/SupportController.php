@@ -45,6 +45,7 @@ class SupportController extends Controller
 
         $support->save();
 
+        // ✅ Enviamos el evento solo a los demás usuarios para evitar duplicación en la vista actual
         broadcast(new RecordChanged('Support', 'created', $support->toArray()))->toOthers();
 
         return response()->json([
@@ -66,6 +67,7 @@ class SupportController extends Controller
 
         $support->save();
 
+        // ✅ Solo notificamos a los demás usuarios para evitar duplicación en el cliente actual
         broadcast(new RecordChanged('Support', 'updated', $support->toArray()))->toOthers();
 
         return response()->json([
@@ -85,7 +87,8 @@ class SupportController extends Controller
         $support = Support::findOrFail($id);
         $support->delete();
 
-        broadcast(new RecordChanged('Support', 'deleted', ['id' => $support->id]))->toOthers();
+        // ❌ Se debe emitir a todos (sin ->toOthers()) para que se elimine en la vista actual también
+        broadcast(new RecordChanged('Support', 'deleted', ['id' => $support->id]));
 
         return response()->json(['success' => true]);
     }
@@ -96,7 +99,8 @@ class SupportController extends Controller
         Support::whereIn('id', $ids)->delete();
 
         foreach ($ids as $id) {
-            broadcast(new RecordChanged('Support', 'deleted', ['id' => $id]))->toOthers();
+            // ❌ Igual que destroy(), se debe emitir a todos para borrar en todas las pestañas activas
+            broadcast(new RecordChanged('Support', 'deleted', ['id' => $id]));
         }
 
         return response()->json(['message' => 'Tickets eliminados correctamente']);

@@ -17,5 +17,6 @@ const echoInstance = new Echo({
   enabledTransports: ['ws', 'wss'],
   cluster: 'mt1', // 👈 Agrega esta línea para evitar el error
 });
+window.Echo = echoInstance;
 
 export default echoInstance;
