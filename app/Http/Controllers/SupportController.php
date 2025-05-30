@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecordChanged;
 use App\Models\Support;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -36,13 +37,15 @@ class SupportController extends Controller
 
         $support = new Support();
         $support->fill($request->except('attachment', 'created_by'));
-        // ✅ Asignar usuario autenticado
         $support->created_by = Auth::id();
+
         if ($request->hasFile('attachment')) {
             $support->attachment = fileStore($request->file('attachment'), 'uploads');
         }
 
         $support->save();
+
+        broadcast(new RecordChanged('Support', 'created', $support->toArray()))->toOthers();
 
         return response()->json([
             'message' => '✅ Ticket de soporte creado correctamente',
@@ -63,6 +66,8 @@ class SupportController extends Controller
 
         $support->save();
 
+        broadcast(new RecordChanged('Support', 'updated', $support->toArray()))->toOthers();
+
         return response()->json([
             'message' => '✅ Ticket de soporte actualizado correctamente',
             'support' => $support,
@@ -77,7 +82,11 @@ class SupportController extends Controller
 
     public function destroy($id)
     {
-        Support::findOrFail($id)->delete();
+        $support = Support::findOrFail($id);
+        $support->delete();
+
+        broadcast(new RecordChanged('Support', 'deleted', ['id' => $support->id]))->toOthers();
+
         return response()->json(['success' => true]);
     }
 
@@ -85,6 +94,10 @@ class SupportController extends Controller
     {
         $ids = $request->input('ids', []);
         Support::whereIn('id', $ids)->delete();
+
+        foreach ($ids as $id) {
+            broadcast(new RecordChanged('Support', 'deleted', ['id' => $id]))->toOthers();
+        }
 
         return response()->json(['message' => 'Tickets eliminados correctamente']);
     }

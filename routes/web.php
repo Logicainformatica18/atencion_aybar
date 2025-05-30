@@ -109,6 +109,9 @@ Route::get('/areas/all', [AreaController::class, 'getAllEnabled']);
 
 });
 
+use App\Http\Controllers\WebSocketTestController;
+
+Route::get('/ws/test', [WebSocketTestController::class, 'send']);
 
 
 require __DIR__.'/settings.php';
