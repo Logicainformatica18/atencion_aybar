@@ -5,6 +5,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SupportController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AreaController;
@@ -97,7 +98,14 @@ Route::get('/clients/search', [ClientController::class, 'searchByName']);
 // routes/web.php
 Route::get('/areas/all', [AreaController::class, 'getAllEnabled']);
 
- 
+
+
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('/roles/fetch', [RoleController::class, 'fetchPaginated'])->name('roles.fetch');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{id}', [RoleController::class, 'show'])->name('roles.show');
+    Route::put('/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
 
 });
 

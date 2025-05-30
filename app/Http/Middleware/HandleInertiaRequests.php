@@ -41,19 +41,24 @@ public function share(Request $request): array
 {
     [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+    $user = $request->user()?->loadMissing('roles');
+
     return [
         ...parent::share($request),
         'name' => config('app.name'),
         'quote' => ['message' => trim($message), 'author' => trim($author)],
         'auth' => [
-            'user' => $request->user(),
+            'user' => $user,
+            'role' => $user?->roles->pluck('name')->first(), // 👈 aquí ya funciona
         ],
-        'permissions' => $request->user()
-            ? $request->user()->getAllPermissions()->pluck('name')->toArray()
+        'permissions' => $user
+            ? $user->getAllPermissions()->pluck('name')->toArray()
             : [],
         'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
     ];
 }
+
+
 
 
 

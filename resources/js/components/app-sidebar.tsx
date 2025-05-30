@@ -1,6 +1,5 @@
-import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
+// layouts/app-sidebar.tsx
+
 import {
   Sidebar,
   SidebarContent,
@@ -8,20 +7,30 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+
+import { NavFooter } from '@/components/nav-footer';
+import { NavMain } from '@/components/nav-main';
+import { NavUser } from '@/components/nav-user';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { LayoutGrid, Folder, BookOpen } from 'lucide-react';
 import AppLogo from './app-logo';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { type NavItem } from '@/types';
+
 type PageProps = {
   permissions: string[];
   sidebarOpen: boolean;
+  auth: {
+    user: any;
+    role: string;
+  };
 };
 
 export function AppSidebar() {
-  const { permissions, sidebarOpen } = usePage<PageProps>().props;
+  const { permissions, auth } = usePage<PageProps>().props;
+  const { toggleSidebar } = useSidebar(); // ← para botón colapsable
 
   const hasPermission = (perm: string) => permissions.includes(perm);
 
@@ -34,6 +43,11 @@ export function AppSidebar() {
     ...(hasPermission('administrar') ? [{
       title: 'Usuarios',
       href: '/users',
+      icon: Folder,
+    }] : []),
+    ...(hasPermission('administrar') ? [{
+      title: 'Roles',
+      href: '/roles',
       icon: Folder,
     }] : []),
     ...(hasPermission('administrar') ? [{
@@ -57,29 +71,27 @@ export function AppSidebar() {
   ];
 
   return (
-    <SidebarProvider open={sidebarOpen}>
-      <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton size="lg" asChild>
-                <Link href="/dashboard" prefetch>
-                  <AppLogo />
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
+    <Sidebar collapsible="icon" variant="inset">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/dashboard">
+                <AppLogo />
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
 
-        <SidebarContent>
-          <NavMain items={mainNavItems} />
-        </SidebarContent>
+      <SidebarContent>
+        <NavMain items={mainNavItems} />
+      </SidebarContent>
 
-        <SidebarFooter>
-          <NavFooter items={footerNavItems} className="mt-auto" />
-          <NavUser />
-        </SidebarFooter>
-      </Sidebar>
-    </SidebarProvider>
+      <SidebarFooter>
+        <NavFooter items={footerNavItems} className="mt-auto" />
+        <NavUser />
+      </SidebarFooter>
+    </Sidebar>
   );
 }
