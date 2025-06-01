@@ -12,7 +12,9 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\InternalStateController;
 use App\Http\Controllers\ExternalStateController;
 use App\Http\Controllers\AppointmentTypeController;
+use App\Http\Controllers\MotiveController;
 use App\Http\Controllers\WaitingDayController;
+
 Route::get('/', function () {
     return redirect("dashboard");
     //return Inertia::render('welcome');
@@ -138,7 +140,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/external-states/bulk-delete', [ExternalStateController::class, 'bulkDelete']);
 
 
-    
+
 Route::prefix('appointment-types')->group(function () {
     Route::get('/', [AppointmentTypeController::class, 'index'])->name('appointment-types.index');
     Route::get('/fetch', [AppointmentTypeController::class, 'fetchPaginated']);
@@ -148,7 +150,7 @@ Route::prefix('appointment-types')->group(function () {
     Route::delete('/{id}', [AppointmentTypeController::class, 'destroy']);
     Route::post('/bulk-delete', [AppointmentTypeController::class, 'bulkDelete']);
 
-  
+
 });
 
  Route::get('/waiting-days', [WaitingDayController::class, 'index'])->name('waiting-days.index');
@@ -158,6 +160,23 @@ Route::post('/waiting-days', [WaitingDayController::class, 'store']);
 Route::put('/waiting-days/{id}', [WaitingDayController::class, 'update']);
 Route::delete('/waiting-days/{id}', [WaitingDayController::class, 'destroy']);
 Route::post('/waiting-days/bulk-delete', [WaitingDayController::class, 'bulkDelete']);
+
+
+
+
+
+
+
+
+
+Route::get('/motives', [MotiveController::class, 'index'])->name('motives.index');
+Route::get('/motives/fetch', [MotiveController::class, 'fetchPaginated']);
+Route::get('/motives/{id}', [MotiveController::class, 'show']);
+Route::post('/motives', [MotiveController::class, 'store']);
+Route::put('/motives/{id}', [MotiveController::class, 'update']);
+Route::delete('/motives/{id}', [MotiveController::class, 'destroy']);
+Route::post('/motives/bulk-delete', [MotiveController::class, 'bulkDelete']);
+
 });
 
 use App\Http\Controllers\WebSocketTestController;

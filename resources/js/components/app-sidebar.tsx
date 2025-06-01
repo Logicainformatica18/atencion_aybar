@@ -50,7 +50,7 @@ export function AppSidebar() {
       href: '/roles',
       icon: Folder,
     }] : []),
-    
+
     ...(hasPermission('administrar') ? [{
       title: 'Areas',
       href: '/areas',
@@ -66,7 +66,7 @@ export function AppSidebar() {
       href: '/internal-states',
       icon: Folder,
     }] : []),
-    
+
     ...(hasPermission('administrar') ? [{
       title: 'Tipos de Cita',
       href: '/appointment-types',
@@ -75,6 +75,11 @@ export function AppSidebar() {
        ...(hasPermission('administrar') ? [{
       title: 'Días de Espera',
       href: '/waiting-days',
+      icon: Folder,
+    }] : []),
+       ...(hasPermission('administrar') ? [{
+      title: 'Motivos de Cita',
+      href: '/motives',
       icon: Folder,
     }] : []),
     ...(hasPermission('administrar') ? [{
