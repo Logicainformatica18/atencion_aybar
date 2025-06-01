@@ -72,6 +72,11 @@ export function AppSidebar() {
       href: '/appointment-types',
       icon: Folder,
     }] : []),
+       ...(hasPermission('administrar') ? [{
+      title: 'Días de Espera',
+      href: '/waiting-days',
+      icon: Folder,
+    }] : []),
     ...(hasPermission('administrar') ? [{
       title: 'Atenciones',
       href: '/supports',
