@@ -1,7 +1,7 @@
 <?php
-    use App\Http\Controllers\TransferController;
-    use App\Http\Controllers\UserController;
-    use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransferController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\SupportController;
@@ -9,7 +9,9 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AreaController;
-
+use App\Http\Controllers\InternalStateController;
+use App\Http\Controllers\ExternalStateController;
+use App\Http\Controllers\AppointmentTypeController;
 Route::get('/', function () {
     return redirect("dashboard");
     //return Inertia::render('welcome');
@@ -94,9 +96,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/supports/{id}', [SupportController::class, 'destroy']);
     Route::post('/supports/bulk-delete', [SupportController::class, 'bulkDelete']);
 
-Route::get('/clients/search', [ClientController::class, 'searchByName']);
-// routes/web.php
-Route::get('/areas/all', [AreaController::class, 'getAllEnabled']);
+    Route::get('/clients/search', [ClientController::class, 'searchByName']);
+    // routes/web.php
+    Route::get('/areas/all', [AreaController::class, 'getAllEnabled']);
 
 
 
@@ -107,6 +109,45 @@ Route::get('/areas/all', [AreaController::class, 'getAllEnabled']);
     Route::put('/roles/{id}', [RoleController::class, 'update'])->name('roles.update');
     Route::delete('/roles/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
 
+    Route::get('/areas/fetch', [AreaController::class, 'fetchPaginated'])->name('areas.fetch');
+    Route::get('/areas', [AreaController::class, 'index'])->name('areas.index');
+    Route::post('/areas', [AreaController::class, 'store']);
+    Route::get('/areas/{id}', [AreaController::class, 'show']);
+    Route::put('/areas/{id}', [AreaController::class, 'update']);
+    Route::delete('/areas/{id}', [AreaController::class, 'destroy']);
+    Route::post('/areas/bulk-delete', [AreaController::class, 'bulkDelete']);
+
+
+
+
+    Route::get('/internal-states/fetch', [InternalStateController::class, 'fetchPaginated'])->name('internal-states.fetch');
+    Route::get('/internal-states', [InternalStateController::class, 'index'])->name('internal-states.index');
+    Route::post('/internal-states', [InternalStateController::class, 'store']);
+    Route::get('/internal-states/{id}', [InternalStateController::class, 'show']);
+    Route::put('/internal-states/{id}', [InternalStateController::class, 'update']);
+    Route::delete('/internal-states/{id}', [InternalStateController::class, 'destroy']);
+    Route::post('/internal-states/bulk-delete', [InternalStateController::class, 'bulkDelete']);
+
+    Route::get('/external-states/fetch', [ExternalStateController::class, 'fetchPaginated'])->name('external-states.fetch');
+    Route::get('/external-states', [ExternalStateController::class, 'index'])->name('external-states.index');
+    Route::post('/external-states', [ExternalStateController::class, 'store']);
+    Route::get('/external-states/{id}', [ExternalStateController::class, 'show']);
+    Route::put('/external-states/{id}', [ExternalStateController::class, 'update']);
+    Route::delete('/external-states/{id}', [ExternalStateController::class, 'destroy']);
+    Route::post('/external-states/bulk-delete', [ExternalStateController::class, 'bulkDelete']);
+
+
+    
+Route::prefix('appointment-types')->group(function () {
+    Route::get('/', [AppointmentTypeController::class, 'index'])->name('appointment-types.index');
+    Route::get('/fetch', [AppointmentTypeController::class, 'fetchPaginated']);
+    Route::post('/', [AppointmentTypeController::class, 'store']);
+    Route::get('/{id}', [AppointmentTypeController::class, 'show']);
+    Route::put('/{id}', [AppointmentTypeController::class, 'update']);
+    Route::delete('/{id}', [AppointmentTypeController::class, 'destroy']);
+    Route::post('/bulk-delete', [AppointmentTypeController::class, 'bulkDelete']);
+});
+
 });
 
 use App\Http\Controllers\WebSocketTestController;
@@ -114,8 +155,8 @@ use App\Http\Controllers\WebSocketTestController;
 Route::get('/ws/test', [WebSocketTestController::class, 'send']);
 
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
 
 /*
 agregar modulos products

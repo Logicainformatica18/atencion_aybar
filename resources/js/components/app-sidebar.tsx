@@ -50,6 +50,28 @@ export function AppSidebar() {
       href: '/roles',
       icon: Folder,
     }] : []),
+    
+    ...(hasPermission('administrar') ? [{
+      title: 'Areas',
+      href: '/areas',
+      icon: Folder,
+    }] : []),
+    ...(hasPermission('administrar') ? [{
+      title: 'Estados Externos',
+      href: '/external-states',
+      icon: Folder,
+    }] : []),
+    ...(hasPermission('administrar') ? [{
+      title: 'Estados Internos',
+      href: '/internal-states',
+      icon: Folder,
+    }] : []),
+    
+    ...(hasPermission('administrar') ? [{
+      title: 'Tipos de Cita',
+      href: '/appointment-types',
+      icon: Folder,
+    }] : []),
     ...(hasPermission('administrar') ? [{
       title: 'Atenciones',
       href: '/supports',

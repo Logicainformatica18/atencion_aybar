@@ -2,88 +2,93 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Area;
 use Illuminate\Http\Request;
-use App\Models\Area ; // Asegúrate de importar el modelo Area
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
+
 class AreaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $areas = Area::orderBy('id_area', 'desc')->paginate(7);
+        return Inertia::render('areas/index', [
+            'areas' => $areas,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function fetchPaginated()
     {
-        //
+        return response()->json(Area::orderBy('id_area', 'desc')->paginate(7));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
-    }
+        $this->validateArea($request);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $area = new Area();
+        $area->fill($request->only('descripcion', 'habilitado'));
+        $area->save();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-    public function searchByName(Request $request)
-{
-    $q = $request->input('q');
-
-    $areas = Area::where('descripcion', 'like', "%$q%")
-        ->where('habilitado', true)
-        ->limit(10)
-        ->get([
-            'id_area as id',
-            'descripcion as name',
+        return response()->json([
+            'message' => '✅ Área creada correctamente',
+            'area' => $area,
         ]);
+    }
 
-    return response()->json($areas);
-}
-public function getAllEnabled()
-{
-   $areas = Area::whereNotIn('descripcion', [
-    'Cobranza',
-    'BackOffice',
-    'SuperAdmin',
-])->get(['id_area as id', 'descripcion as name']);
+    public function update(Request $request, $id)
+    {
+        $area = Area::findOrFail($id);
+        $this->validateArea($request);
 
-    return response()->json($areas);
-}
+        $area->fill($request->only('descripcion', 'habilitado'));
+        $area->save();
+
+        return response()->json([
+            'message' => '✅ Área actualizada correctamente',
+            'area' => $area,
+        ]);
+    }
+
+    public function show($id)
+    {
+        $area = Area::findOrFail($id);
+        return response()->json(['area' => $area]);
+    }
+
+    public function destroy($id)
+    {
+        Area::findOrFail($id)->delete();
+        return response()->json(['success' => true]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        Area::whereIn('id_area', $ids)->delete();
+
+        return response()->json(['message' => 'Eliminadas correctamente']);
+    }
+
+    private function validateArea(Request $request)
+    {
+        $request->validate([
+            'descripcion' => 'required|string|max:50',
+            'habilitado' => 'required|boolean',
+        ]);
+    }
+    public function getAllEnabled()
+    {
+        $areas = Area::whereNotIn('descripcion', [
+            'Cobranza',
+            'BackOffice',
+            'SuperAdmin',
+        ])->get(['id_area as id', 'descripcion as name']);
+
+        return response()->json($areas);
+    }
 
 }
+
+
+

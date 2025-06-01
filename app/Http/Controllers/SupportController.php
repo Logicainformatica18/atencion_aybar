@@ -125,3 +125,5 @@ class SupportController extends Controller
         ]);
     }
 }
+
+//TODAS LAS CITAS INICIAN EN ATC POR DEFECTO YLUEGO SE DEBEN DERIBAR A CADA AREA SEGUN CORRESPONDA
