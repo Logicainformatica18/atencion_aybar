@@ -6,7 +6,7 @@ import axios from 'axios';
 import SupportModal from './modal';
 import echo from '@/lib/echo';
 import SupportTable from './table';
-
+import ChatWidget from '@/components/ChatWidget';
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Atenciones', href: '/supports' },
 ];
@@ -163,6 +163,7 @@ export default function Supports() {
           types={types}
         />
       )}
+  <ChatWidget />
     </AppLayout>
   );
 }

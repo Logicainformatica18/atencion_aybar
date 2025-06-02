@@ -15,7 +15,7 @@ use App\Http\Controllers\AppointmentTypeController;
 use App\Http\Controllers\MotiveController;
 use App\Http\Controllers\WaitingDayController;
 use App\Http\Controllers\TypeController;
-
+use App\Http\Controllers\ChatMessageController;
 
 
 Route::get('/', function () {
@@ -216,7 +216,9 @@ Route::put('/types/{id}', [TypeController::class, 'update']);
 Route::delete('/types/{id}', [TypeController::class, 'destroy']);
 Route::post('/types/bulk-delete', [TypeController::class, 'bulkDelete']);
 
-
+      Route::get('/chat', [ChatMessageController::class, 'index'])->name('chat.index');
+    Route::get('/chat/messages', [ChatMessageController::class, 'fetch'])->name('chat.fetch');
+    Route::post('/chat/messages', [ChatMessageController::class, 'store'])->name('chat.store');
 });
 
 use App\Http\Controllers\WebSocketTestController;

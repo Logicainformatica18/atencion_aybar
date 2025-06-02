@@ -8,3 +8,11 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('chat', function ($user) {
     return true; // Solo para pruebas, luego validas
 });
+Broadcast::channel('chat-room', function ($user) {
+    return [
+        'id' => $user->id,
+        'email' => $user->email,
+        'name' => $user->firstname . ' ' . $user->lastname,
+        'role_name' => $user->getRoleNames()->first(),
+    ];
+});
