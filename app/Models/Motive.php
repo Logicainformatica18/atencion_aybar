@@ -17,8 +17,9 @@ class Motive extends Model
         'id_tipo_cita',
         'id_dia_espera',
         'id_area',
+        'id_areap',
         'habilitado',
-        // 'id_areap' no se incluye aquí ya que lo forzamos a 1
+
     ];
 
     protected $casts = [

@@ -8,7 +8,7 @@ use App\Models\WaitingDay;
 use App\Models\Area;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
+  use Illuminate\Support\Facades\Log;
 class MotiveController extends Controller
 {
     public function index()
@@ -65,25 +65,31 @@ public function fetchPaginated()
 
 
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nombre_motivo' => 'required|string|max:255',
-            'id_tipo_cita' => 'nullable|exists:tipos_cita,id_tipo_cita',
-            'id_dia_espera' => 'nullable|exists:dias_espera,id_dias_espera',
-            'id_area' => 'required|exists:areas,id_area',
-            'habilitado' => 'required|boolean',
-        ]);
 
-        $validated['id_areap'] = 1; // Se fuerza desde backend
 
-        $motive = Motive::create($validated->except('id_areap'));
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'nombre_motivo' => 'required|string|max:255',
+        'id_tipo_cita' => 'nullable|exists:tipos_cita,id_tipo_cita',
+        'id_dia_espera' => 'nullable|exists:dias_espera,id_dias_espera',
+        'id_area' => 'required|exists:areas,id_area',
+        'habilitado' => 'required|boolean',
+    ]);
 
-        return response()->json([
-            'message' => 'Motivo creado correctamente',
-            'motive' => $motive->load(['tipoCita', 'diaEspera', 'area']),
-        ]);
-    }
+    $validated['id_areap'] = 1; // Se fuerza desde backend
+
+    // Log opcional
+    Log::info('🎯 Creando motivo de cita con datos:', $validated);
+
+    $motive = Motive::create($validated);
+
+    return response()->json([
+        'message' => '✅ Motivo creado correctamente',
+        'motive' => $motive->load(['tipoCita', 'diaEspera', 'area']),
+    ]);
+}
+
 
     public function show($id)
     {

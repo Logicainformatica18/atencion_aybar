@@ -70,27 +70,51 @@ public function fetchPaginated()
 }
 
 
-    public function store(Request $request)
-    {
-      //  $this->validateSupport($request);
 
-        $support = new Support();
-        $support->fill($request->except('attachment', 'created_by'));
-        $support->created_by = Auth::id();
+public function store(Request $request)
+{
+    // Crear instancia del soporte
+    $support = new Support();
 
-        if ($request->hasFile('attachment')) {
-            $support->attachment = fileStore($request->file('attachment'), 'uploads');
-        }
+    // Asignación con valores por defecto
+    $support->subject = $request->input('subject', 'Nuevo Ticket de Soporte');
+    $support->description = $request->input('description', 'Descripción del ticket de soporte');
+    $support->client_id = $request->input('client_id', 1); // Asignar un cliente por defecto
+    $support->cellphone = $request->input('cellphone', '0000000000'); // Asignar un celular por defecto
 
-        $support->save();
+    $support->priority = $request->input('priority', 'Normal');
+    $support->type = $request->input('type', 'Consulta');
+    $support->status = $request->input('status', 'Pendiente');
+    $support->reservation_time = $request->input('reservation_time', now());
+    $support->attended_at = $request->input('attended_at', now()->addHour());
+    $support->created_by = Auth::id();
+    $support->area_id = 1;
 
-        broadcast(new RecordChanged('Support', 'created', $support->toArray()))->toOthers();
+    $support->derived = $request->input('derived', '');
+    $support->id_motivos_cita = 28;
 
-        return response()->json([
-            'message' => '✅ Ticket de soporte creado correctamente',
-            'support' => $support,
-        ]);
+    // Log antes de guardar
+    Log::info('📥 Datos recibidos para nuevo soporte:', [
+        'request' => $request->all(),
+        'campos_seteados' => $support->toArray(),
+    ]);
+
+    // Adjuntar archivo si existe
+    if ($request->hasFile('attachment')) {
+        $support->attachment = fileStore($request->file('attachment'), 'uploads');
     }
+
+    // Guardar
+    $support->save();
+
+    // Broadcast (si aplica)
+    broadcast(new RecordChanged('Support', 'created', $support->toArray()))->toOthers();
+
+    return response()->json([
+        'message' => '✅ Ticket de soporte creado correctamente',
+        'support' => $support,
+    ]);
+}
 
     public function update(Request $request, $id)
     {

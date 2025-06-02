@@ -166,6 +166,10 @@ export default function SupportModal({
                             }}
                         />
                     </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Celular</Label>
+                        <Input name="cellphone" value={formData.cellphone} onChange={handleChange} className="col-span-3" />
+                    </div>
                     <div className="grid grid-cols-4 items-start gap-4">
                         <Label className="text-right pt-2">Descripción</Label>
                         <textarea
@@ -177,7 +181,7 @@ export default function SupportModal({
                         />
                     </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    {/* <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Área</Label>
                         <select name="area_id" value={formData.area_id} onChange={handleChange} className="col-span-3">
                             <option value="">Seleccione...</option>
@@ -185,7 +189,7 @@ export default function SupportModal({
                                 <option key={a.id} value={a.id}>{a.name}</option>
                             ))}
                         </select>
-                    </div>
+                    </div> */}
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Archivo</Label>
@@ -195,13 +199,13 @@ export default function SupportModal({
                         )}
                     </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    {/* <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Motivo de Cita</Label>
                         <select name="id_motivos_cita" value={formData.id_motivos_cita} onChange={handleChange} className="col-span-3">
                             <option value="">Seleccione...</option>
                             {motives.map(m => <option key={m.id} value={m.id}>{m.nombre_motivo}</option>)}
                         </select>
-                    </div>
+                    </div> */}
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Tipo de Cita</Label>
@@ -211,13 +215,13 @@ export default function SupportModal({
                         </select>
                     </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    {/* <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Día de Espera</Label>
                         <select name="id_dia_espera" value={formData.id_dia_espera} onChange={handleChange} className="col-span-3">
                             <option value="">Seleccione...</option>
                             {waitingDays.map(d => <option key={d.id} value={d.id}>{d.dias}</option>)}
                         </select>
-                    </div>
+                    </div> */}
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Estado Interno</Label>
@@ -253,15 +257,12 @@ export default function SupportModal({
                         <Input type="datetime-local" name="attended_at" value={formData.attended_at} onChange={handleChange} className="col-span-3" />
                     </div>
 
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    {/* <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Derivado</Label>
                         <Input name="derived" value={formData.derived} onChange={handleChange} className="col-span-3" />
-                    </div>
+                    </div> */}
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Celular</Label>
-                        <Input name="cellphone" value={formData.cellphone} onChange={handleChange} className="col-span-3" />
-                    </div>
+
                 </div>
 
                 <DialogFooter>
