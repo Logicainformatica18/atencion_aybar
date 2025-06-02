@@ -2,6 +2,7 @@ import { Paintbrush, Trash2 } from 'lucide-react';
 import HourglassLoader from '@/components/HourglassLoader';
 import { useState } from 'react';
 import axios from 'axios';
+import { usePage } from '@inertiajs/react';
 
 interface Support {
   id: number;
@@ -37,6 +38,9 @@ interface Props {
   fetchPage: (url: string) => Promise<void>;
   fetchSupport: (id: number) => Promise<void>;
 }
+type PageProps = {
+  permissions: string[];
+};
 
 export default function SupportTable({
   supports,
@@ -45,9 +49,14 @@ export default function SupportTable({
   fetchPage,
   fetchSupport,
 }: Props) {
+
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+
+const { permissions } = usePage<PageProps>().props;
+
+const canEdit = permissions.includes('administrar') || permissions.includes('atc');
 
   return (
     <>
@@ -116,23 +125,26 @@ export default function SupportTable({
                   />
                 </td>
                 <td className="px-4 py-2 text-sm space-x-2">
-                  <button
-                    onClick={async () => {
-                      setEditingId(support.id);
-                      await fetchSupport(support.id);
-                      setEditingId(null);
-                    }}
-                    disabled={editingId === support.id}
-                    className="text-blue-600 hover:underline dark:text-blue-400 flex items-center gap-1"
-                  >
-                    {editingId === support.id ? (
-                      <HourglassLoader />
-                    ) : (
-                      <>
-                        <Paintbrush className="w-4 h-4" /> Editar
-                      </>
-                    )}
-                  </button>
+               {canEdit && (
+  <button
+    onClick={async () => {
+      setEditingId(support.id);
+      await fetchSupport(support.id);
+      setEditingId(null);
+    }}
+    disabled={editingId === support.id}
+    className="text-blue-600 hover:underline dark:text-blue-400 flex items-center gap-1"
+  >
+    {editingId === support.id ? (
+      <HourglassLoader />
+    ) : (
+      <>
+        <Paintbrush className="w-4 h-4" /> Editar
+      </>
+    )}
+  </button>
+)}
+
                   <button
                     onClick={async () => {
                       if (confirm(`¿Eliminar soporte "${support.subject}"?`)) {

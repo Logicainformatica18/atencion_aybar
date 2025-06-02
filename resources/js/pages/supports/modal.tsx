@@ -13,7 +13,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import ClientSearch from './clientSearch';
-
+import { usePage } from '@inertiajs/react';
 const getNowPlusHours = (plus = 0) => {
     const now = new Date();
     now.setHours(now.getHours() + plus);
@@ -25,7 +25,9 @@ const getNowPlusHours = (plus = 0) => {
     const mm = pad(now.getMinutes());
     return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
 };
-
+type PageProps = {
+    permissions: string[];
+};
 export default function SupportModal({
     open,
     onClose,
@@ -75,6 +77,8 @@ export default function SupportModal({
     const [preview, setPreview] = useState<string | null>(null);
     const [areas, setAreas] = useState<{ id: number; name: string }[]>([]);
     const [uploading, setUploading] = useState(false);
+    const { permissions } = usePage<PageProps>().props;
+    const canEditAdvancedFields = permissions.includes('administrar') || permissions.includes('atc');
 
     useEffect(() => {
         axios.get('/areas/all')
@@ -166,7 +170,7 @@ export default function SupportModal({
                             }}
                         />
                     </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Celular</Label>
                         <Input name="cellphone" value={formData.cellphone} onChange={handleChange} className="col-span-3" />
                     </div>
@@ -181,15 +185,23 @@ export default function SupportModal({
                         />
                     </div>
 
-                    {/* <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Área</Label>
-                        <select name="area_id" value={formData.area_id} onChange={handleChange} className="col-span-3">
-                            <option value="">Seleccione...</option>
-                            {areas.map((a) => (
-                                <option key={a.id} value={a.id}>{a.name}</option>
-                            ))}
-                        </select>
-                    </div> */}
+                    {canEditAdvancedFields && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">Área</Label>
+                            <select
+                                name="area_id"
+                                value={formData.area_id}
+                                onChange={handleChange}
+                                className="col-span-3"
+                            >
+
+                                {areas.map((a) => (
+                                    <option key={a.id} value={a.id}>{a.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Archivo</Label>
@@ -199,50 +211,97 @@ export default function SupportModal({
                         )}
                     </div>
 
-                    {/* <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Motivo de Cita</Label>
-                        <select name="id_motivos_cita" value={formData.id_motivos_cita} onChange={handleChange} className="col-span-3">
-                            <option value="">Seleccione...</option>
-                            {motives.map(m => <option key={m.id} value={m.id}>{m.nombre_motivo}</option>)}
-                        </select>
-                    </div> */}
+                    {canEditAdvancedFields && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">Motivo de Cita</Label>
+                            <select
+                                name="id_motivos_cita"
+                                value={formData.id_motivos_cita}
+                                onChange={handleChange}
+                                className="col-span-3"
+                            >
+
+                                {motives.map(m => (
+                                    <option key={m.id} value={m.id}>
+                                        {m.nombre_motivo}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Tipo de Cita</Label>
                         <select name="id_tipo_cita" value={formData.id_tipo_cita} onChange={handleChange} className="col-span-3">
-                            <option value="">Seleccione...</option>
+
                             {appointmentTypes.map(t => <option key={t.id} value={t.id}>{t.tipo}</option>)}
                         </select>
                     </div>
 
-                    {/* <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Día de Espera</Label>
-                        <select name="id_dia_espera" value={formData.id_dia_espera} onChange={handleChange} className="col-span-3">
-                            <option value="">Seleccione...</option>
-                            {waitingDays.map(d => <option key={d.id} value={d.id}>{d.dias}</option>)}
-                        </select>
-                    </div> */}
+                    {canEditAdvancedFields && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">Día de Espera</Label>
+                            <select
+                                name="id_dia_espera"
+                                value={formData.id_dia_espera}
+                                onChange={handleChange}
+                                className="col-span-3"
+                            >
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Estado Interno</Label>
-                        <select name="internal_state_id" value={formData.internal_state_id} onChange={handleChange} className="col-span-3">
-                            <option value="">Seleccione...</option>
-                            {internalStates.map(i => <option key={i.id} value={i.id}>{i.description}</option>)}
-                        </select>
-                    </div>
+                                {waitingDays.map(d => (
+                                    <option key={d.id} value={d.id}>
+                                        {d.dias}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Estado Externo</Label>
-                        <select name="external_state_id" value={formData.external_state_id} onChange={handleChange} className="col-span-3">
-                            <option value="">Seleccione...</option>
-                            {externalStates.map(e => <option key={e.id} value={e.id}>{e.description}</option>)}
-                        </select>
-                    </div>
+
+                 {canEditAdvancedFields && (
+  <div className="grid grid-cols-4 items-center gap-4">
+    <Label className="text-right">Estado Interno</Label>
+    <select
+      name="internal_state_id"
+      value={formData.internal_state_id}
+      onChange={handleChange}
+      className="col-span-3"
+    >
+      <option value="">Seleccione...</option>
+      {internalStates.map(i => (
+        <option key={i.id} value={i.id}>
+          {i.description}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
+{canEditAdvancedFields && (
+  <div className="grid grid-cols-4 items-center gap-4">
+    <Label className="text-right">Estado Externo</Label>
+    <select
+      name="external_state_id"
+      value={formData.external_state_id}
+      onChange={handleChange}
+      className="col-span-3"
+    >
+      <option value="">Seleccione...</option>
+      {externalStates.map(e => (
+        <option key={e.id} value={e.id}>
+          {e.description}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
 
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label className="text-right">Tipo (Catálogo)</Label>
                         <select name="type_id" value={formData.type_id} onChange={handleChange} className="col-span-3">
-                            <option value="">Seleccione...</option>
+
                             {types.map(t => <option key={t.id} value={t.id}>{t.description}</option>)}
                         </select>
                     </div>
@@ -257,10 +316,18 @@ export default function SupportModal({
                         <Input type="datetime-local" name="attended_at" value={formData.attended_at} onChange={handleChange} className="col-span-3" />
                     </div>
 
-                    {/* <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-right">Derivado</Label>
-                        <Input name="derived" value={formData.derived} onChange={handleChange} className="col-span-3" />
-                    </div> */}
+                    {canEditAdvancedFields && (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">Derivado</Label>
+                            <Input
+                                name="derived"
+                                value={formData.derived}
+                                onChange={handleChange}
+                                className="col-span-3"
+                            />
+                        </div>
+                    )}
+
 
 
                 </div>

@@ -29,10 +29,13 @@ type PageProps = {
 };
 
 export function AppSidebar() {
-  const { permissions, auth } = usePage<PageProps>().props;
-  const { toggleSidebar } = useSidebar(); // ← para botón colapsable
+  const { permissions } = usePage<PageProps>().props;
+  const { toggleSidebar } = useSidebar();
 
-  const hasPermission = (perm: string) => permissions.includes(perm);
+  const has = (perm: string) => permissions.includes(perm);
+  const isAdmin = has('administrar');
+  const isReserva = has('reserva');
+  const isATC = has('atc');
 
   const mainNavItems: NavItem[] = [
     {
@@ -40,66 +43,81 @@ export function AppSidebar() {
       href: '/dashboard',
       icon: LayoutGrid,
     },
-    ...(hasPermission('administrar') ? [{
+
+    // Usuarios (solo admin)
+    ...(isAdmin ? [{
       title: 'Usuarios',
       href: '/users',
       icon: Folder,
     }] : []),
-    ...(hasPermission('administrar') ? [{
+
+    // Roles (solo admin)
+    ...(isAdmin ? [{
       title: 'Roles',
       href: '/roles',
       icon: Folder,
     }] : []),
 
-    ...(hasPermission('administrar') ? [{
-      title: 'Areas',
-      href: '/areas',
-      icon: Folder,
-    }] : []),
-    ...(hasPermission('administrar') ? [{
-      title: 'Estados Externos',
-      href: '/external-states',
-      icon: Folder,
-    }] : []),
-    ...(hasPermission('administrar') ? [{
-      title: 'Estados Internos',
-      href: '/internal-states',
-      icon: Folder,
-    }] : []),
-
-    ...(hasPermission('administrar') ? [{
-      title: 'Tipos de Cita',
-      href: '/appointment-types',
-      icon: Folder,
-    }] : []),
-       ...(hasPermission('administrar') ? [{
-      title: 'Días de Espera',
-      href: '/waiting-days',
-      icon: Folder,
-    }] : []),
-       ...(hasPermission('administrar') ? [{
-      title: 'Motivos de Cita',
-      href: '/motives',
-      icon: Folder,
-    }] : []),
-    
-       ...(hasPermission('administrar') ? [{
+    // Clientes (admin o reserva)
+    ...((isAdmin || isReserva) ? [{
       title: 'Clientes',
       href: '/clients',
       icon: Folder,
     }] : []),
 
-       ...(hasPermission('administrar') ? [{
-      title: 'Tipos',
-      href: '/types',
-      icon: Folder,
-    }] : []),
-    ...(hasPermission('administrar') ? [{
+    // Atenciones (admin, reserva o atc)
+    ...((isAdmin || isReserva || isATC) ? [{
       title: 'Atenciones',
       href: '/supports',
       icon: Folder,
     }] : []),
+
+    // Otros módulos (admin o atc)
+    ...((isAdmin || isATC) ? [{
+      title: 'Areas',
+      href: '/areas',
+      icon: Folder,
+    }] : []),
+
+    ...((isAdmin || isATC) ? [{
+      title: 'Estados Externos',
+      href: '/external-states',
+      icon: Folder,
+    }] : []),
+
+    ...((isAdmin || isATC) ? [{
+      title: 'Estados Internos',
+      href: '/internal-states',
+      icon: Folder,
+    }] : []),
+
+    ...((isAdmin || isATC) ? [{
+      title: 'Tipos de Cita',
+      href: '/appointment-types',
+      icon: Folder,
+    }] : []),
+
+    ...((isAdmin || isATC) ? [{
+      title: 'Días de Espera',
+      href: '/waiting-days',
+      icon: Folder,
+    }] : []),
+
+    ...((isAdmin || isATC) ? [{
+      title: 'Motivos de Cita',
+      href: '/motives',
+      icon: Folder,
+    }] : []),
+
+    ...((isAdmin || isATC) ? [{
+      title: 'Tipos',
+      href: '/types',
+      icon: Folder,
+    }] : []),
   ];
+
+
+
 
   const footerNavItems: NavItem[] = [
     {

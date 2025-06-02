@@ -88,6 +88,9 @@ public function store(Request $request)
     $support->reservation_time = $request->input('reservation_time', now());
     $support->attended_at = $request->input('attended_at', now()->addHour());
     $support->created_by = Auth::id();
+    $support->external_state_id = 1;
+    $support->internal_state_id = 1;
+    $support->type_id = 1;
     $support->area_id = 1;
 
     $support->derived = $request->input('derived', '');

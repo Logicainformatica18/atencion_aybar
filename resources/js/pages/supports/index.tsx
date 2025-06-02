@@ -8,7 +8,7 @@ import echo from '@/lib/echo';
 import SupportTable from './table';
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Soportes', href: '/supports' },
+  { title: 'Atenciones', href: '/supports' },
 ];
 
 type Support = {
@@ -125,7 +125,7 @@ export default function Supports() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Listado de Soportes</h1>
+        <h1 className="text-2xl font-bold mb-4">Listado de Atenciones</h1>
 
         <button
           onClick={() => {
