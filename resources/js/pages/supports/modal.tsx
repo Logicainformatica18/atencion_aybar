@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,293 +14,264 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import ClientSearch from './clientSearch';
 
-
 const getNowPlusHours = (plus = 0) => {
-  const now = new Date();
-
-  // Ajustar a hora local real (corrige si estás en UTC u otra zona)
-  now.setHours(now.getHours() + plus);
-
-  // Convertir a YYYY-MM-DDTHH:MM
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  const yyyy = now.getFullYear();
-  const MM = pad(now.getMonth() + 1);
-  const dd = pad(now.getDate());
-  const hh = pad(now.getHours());
-  const mm = pad(now.getMinutes());
-
-  return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+    const now = new Date();
+    now.setHours(now.getHours() + plus);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const yyyy = now.getFullYear();
+    const MM = pad(now.getMonth() + 1);
+    const dd = pad(now.getDate());
+    const hh = pad(now.getHours());
+    const mm = pad(now.getMinutes());
+    return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
 };
 
-
 export default function SupportModal({
-  open,
-  onClose,
-  onSaved,
-  supportToEdit,
+    open,
+    onClose,
+    onSaved,
+    supportToEdit,
+    motives,
+    appointmentTypes,
+    waitingDays,
+    internalStates,
+    externalStates,
+    types,
 }: {
-  open: boolean;
-  onClose: () => void;
-  onSaved: (support: any) => void;
-  supportToEdit?: any;
+    open: boolean;
+    onClose: () => void;
+    onSaved: (support: any) => void;
+    supportToEdit?: any;
+    motives: any[];
+    appointmentTypes: any[];
+    waitingDays: any[];
+    internalStates: any[];
+    externalStates: any[];
+    types: any[];
 }) {
-const [formData, setFormData] = useState({
-  subject: '',
-  description: '',
-  priority: 'Normal',
-  type: 'Consulta',
-  status: 'Pendiente',
-  cellphone: '',
-  created_by: 1,
-  client_id: 1,
-  area_id: '',
-  reservation_time: getNowPlusHours(0),
-  attended_at: getNowPlusHours(1),
-  derived: '',
-});
-
-
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [clientQuery, setClientQuery] = useState('');
- const [areas, setAreas] = useState<{ id: number; name: string }[]>([]);
-
-
-
-  useEffect(() => {
-    if (supportToEdit) {
-      setFormData({
-        subject: supportToEdit.subject || '',
-        description: supportToEdit.description || '',
-        priority: supportToEdit.priority || 'Normal',
-        type: supportToEdit.type || 'Consulta',
-        status: supportToEdit.status || 'Pendiente',
-        cellphone: supportToEdit.cellphone || '',
-        created_by: supportToEdit.created_by || 1,
-        client_id: supportToEdit.client_id || 1,
-        area_id: supportToEdit.area_id || null,
-        reservation_time: supportToEdit.reservation_time || '',
-        attended_at: supportToEdit.attended_at || '',
-        derived: supportToEdit.derived || '',
-      });
-      setClientQuery(supportToEdit.client?.names || '');
-      if (supportToEdit.attachment) {
-        setPreview(`/attachments/${supportToEdit.attachment}`);
-      }
-    } else {
-      handleReset();
-    }
-      axios.get('/areas/all')
-    .then((res) => setAreas(res.data))
-    .catch((err) => console.error('Error al cargar áreas:', err));
-  }, [supportToEdit]);
- 
-  const handleChange = (e: React.ChangeEvent<any>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    if (file) {
-      setFile(file);
-      setPreview(file.type.startsWith('image') ? URL.createObjectURL(file) : file.name);
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      setUploading(true);
-      setProgress(0);
-
-      const data = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null) data.append(key, String(value));
-      });
-      if (file) data.append('attachment', file);
-
-      const url = supportToEdit ? `/supports/${supportToEdit.id}` : '/supports';
-      if (supportToEdit) data.append('_method', 'PUT');
-
-      const response = await axios.post(url, data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (e) => {
-          if (e.total) setProgress(Math.round((e.loaded * 100) / e.total));
-        },
-      });
-
-      toast.success(supportToEdit ? 'Soporte actualizado ✅' : 'Soporte creado ✅');
-      onSaved(response.data.support);
-      handleReset();
-      onClose();
-    } catch (error) {
-      console.error('❌ Error al guardar:', error);
-      toast.error('Hubo un error al guardar');
-    } finally {
-      setUploading(false);
-      setProgress(0);
-    }
-  };
-
-  const handleReset = () => {
-    setFormData({
-      subject: '',
-      description: '',
-      priority: 'Normal',
-      type: 'Consulta',
-      status: 'Pendiente',
-      cellphone: '',
-      created_by: 1,
-      client_id: 1,
-      area_id: '',
-       reservation_time: getNowPlusHours(0),
-  attended_at: getNowPlusHours(1),
-      derived: '',
+    const [formData, setFormData] = useState({
+        subject: '',
+        description: '',
+        priority: 'Normal',
+        type: 'Consulta',
+        status: 'Pendiente',
+        cellphone: '',
+        created_by: 1,
+        client_id: 1,
+        area_id: '',
+        reservation_time: getNowPlusHours(0),
+        attended_at: getNowPlusHours(1),
+        derived: '',
+        id_motivos_cita: '',
+        id_tipo_cita: '',
+        id_dia_espera: '',
+        internal_state_id: '',
+        external_state_id: '',
+        type_id: '',
     });
-    setClientQuery('');
-    setFile(null);
-    setPreview(null);
-  };
 
-  return (
-    <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{supportToEdit ? 'Editar Soporte' : 'Nuevo Soporte'}</DialogTitle>
-        </DialogHeader>
+    const [clientQuery, setClientQuery] = useState('');
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const [areas, setAreas] = useState<{ id: number; name: string }[]>([]);
+    const [uploading, setUploading] = useState(false);
 
-        {uploading && (
-          <div className="w-full mb-4">
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-2 bg-blue-500 transition-all duration-100" style={{ width: `${progress}%` }} />
-            </div>
-            <p className="text-xs text-center text-gray-500 mt-1">{progress}%</p>
-          </div>
-        )}
+    useEffect(() => {
+        axios.get('/areas/all')
+            .then((res) => setAreas(res.data))
+            .catch((err) => console.error('Error al cargar áreas:', err));
 
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label className="text-right">Cliente</Label>
-            <ClientSearch
-              query={clientQuery}
-              setQuery={setClientQuery}
-              onSelect={(client) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  client_id: client.id,
-                }));
-                setClientQuery(client.names);
-              }}
-            />
-          </div>
+        if (supportToEdit) {
+            setFormData({
+                ...formData,
+                ...supportToEdit,
+                reservation_time: supportToEdit.reservation_time || getNowPlusHours(0),
+                attended_at: supportToEdit.attended_at || getNowPlusHours(1)
+            });
+            setClientQuery(supportToEdit.client?.names || '');
+            if (supportToEdit.attachment) {
+                setPreview(`/attachments/${supportToEdit.attachment}`);
+            }
+        }
+    }, [supportToEdit]);
 
-<div className="grid grid-cols-4 items-center gap-4">
-  <Label htmlFor="area_id" className="text-right">Área</Label>
-  <select
-    name="area_id"
-    value={formData.area_id || ''}
-    onChange={handleChange}
-    className="col-span-3 border rounded px-3 py-2 text-sm"
-  >
-    <option value="">Seleccionar área</option>
-    {areas.map((area) => (
-      <option key={area.id} value={area.id}>
-        {area.name}
-      </option>
-    ))}
-  </select>
-</div>
+    const handleChange = (e: React.ChangeEvent<any>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="subject" className="text-right">Asunto</Label>
-            <Input name="subject" value={formData.subject} onChange={handleChange} className="col-span-3" />
-          </div>
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = e.target.files?.[0] || null;
+        setFile(selected);
+        if (selected) {
+            setPreview(selected.type.startsWith('image') ? URL.createObjectURL(selected) : selected.name);
+        }
+    };
 
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="description" className="text-right">Descripción</Label>
-            <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="col-span-3 border rounded px-3 py-2 text-sm" />
-          </div>
+    const handleSubmit = async () => {
+        try {
+            setUploading(true);
+            const data = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                if (value !== null) data.append(key, String(value));
+            });
+            if (file) data.append('attachment', file);
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="priority" className="text-right">Prioridad</Label>
-            <select name="priority" value={formData.priority} onChange={handleChange} className="col-span-3 border rounded px-3 py-2 text-sm">
-              <option value="Normal">Normal</option>
-              <option value="Urgente">Urgente</option>
-              <option value="Preferencial">Preferencial</option>
-            </select>
-          </div>
+            const url = supportToEdit ? `/supports/${supportToEdit.id}` : '/supports';
+            if (supportToEdit) data.append('_method', 'PUT');
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="type" className="text-right">Tipo</Label>
-            <select name="type" value={formData.type} onChange={handleChange} className="col-span-3 border rounded px-3 py-2 text-sm">
-              <option value="Consulta">Consulta</option>
-              <option value="Reclamo">Reclamo</option>
-              <option value="Sugerencia">Sugerencia</option>
-            </select>
-          </div>
+            const response = await axios.post(url, data, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="status" className="text-right">Estado</Label>
-            <select name="status" value={formData.status} onChange={handleChange} className="col-span-3 border rounded px-3 py-2 text-sm">
-              <option value="Pendiente">Pendiente</option>
-              <option value="Atendido">Atendido</option>
-              <option value="Cerrado">Cerrado</option>
-            </select>
-          </div>
+            toast.success(supportToEdit ? 'Soporte actualizado ✅' : 'Soporte creado ✅');
+            onSaved(response.data.support);
+            onClose();
+        } catch (error) {
+            console.error('❌ Error al guardar:', error);
+            toast.error('Hubo un error al guardar');
+        } finally {
+            setUploading(false);
+        }
+    };
 
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="cellphone" className="text-right">Celular</Label>
-            <Input name="cellphone" value={formData.cellphone} onChange={handleChange} className="col-span-3" />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="reservation_time" className="text-right">Reserva</Label>
-            <Input type="datetime-local" name="reservation_time" value={formData.reservation_time} onChange={handleChange} className="col-span-3" />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="attended_at" className="text-right">Atendido</Label>
-            <Input type="datetime-local" name="attended_at" value={formData.attended_at} onChange={handleChange} className="col-span-3" />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="derived" className="text-right">Derivado</Label>
-            <Input name="derived" value={formData.derived} onChange={handleChange} className="col-span-3" />
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="attachment" className="text-right">Archivo</Label>
-            <div className="col-span-3">
-              <Input type="file" name="attachment" onChange={handleFileChange} />
-              {preview && (
-                <div className="mt-2">
-                  {preview.startsWith('blob:') ? (
-                    <img src={preview} alt="preview" className="w-16 h-16 object-cover rounded" />
-                  ) : (
-                    <a href={preview} className="text-blue-600 underline text-sm">{preview}</a>
-                  )}
+    return (
+        <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
+            <DialogContent className="sm:max-w-3xl">
+                <DialogHeader>
+                    <DialogTitle>{supportToEdit ? 'Editar Atención' : 'Nueva Atención'}</DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Asunto</Label>
+                    <Input
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        className="col-span-3"
+                    />
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
 
-        <DialogFooter className="flex justify-between">
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleReset} disabled={uploading}>Nuevo</Button>
-            <Button onClick={handleSubmit} disabled={uploading}>
-              {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {supportToEdit ? 'Actualizar' : 'Guardar'}
-            </Button>
-          </div>
-          <Button variant="ghost" onClick={onClose} disabled={uploading}>Cerrar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Cliente</Label>
+                        <ClientSearch
+                            query={clientQuery}
+                            setQuery={setClientQuery}
+                            onSelect={(client) => {
+                                setFormData((prev) => ({ ...prev, client_id: client.id }));
+                                setClientQuery(client.names);
+                            }}
+                        />
+                    </div>
+                    <div className="grid grid-cols-4 items-start gap-4">
+                        <Label className="text-right pt-2">Descripción</Label>
+                        <textarea
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            className="col-span-3 border rounded px-3 py-2 text-sm"
+                            rows={4}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Área</Label>
+                        <select name="area_id" value={formData.area_id} onChange={handleChange} className="col-span-3">
+                            <option value="">Seleccione...</option>
+                            {areas.map((a) => (
+                                <option key={a.id} value={a.id}>{a.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Archivo</Label>
+                        <input type="file" onChange={handleFileChange} className="col-span-3" />
+                        {preview && preview.startsWith('blob:') && (
+                            <img src={preview} alt="preview" className="col-span-3 w-20 h-20 object-cover rounded" />
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Motivo de Cita</Label>
+                        <select name="id_motivos_cita" value={formData.id_motivos_cita} onChange={handleChange} className="col-span-3">
+                            <option value="">Seleccione...</option>
+                            {motives.map(m => <option key={m.id} value={m.id}>{m.nombre_motivo}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Tipo de Cita</Label>
+                        <select name="id_tipo_cita" value={formData.id_tipo_cita} onChange={handleChange} className="col-span-3">
+                            <option value="">Seleccione...</option>
+                            {appointmentTypes.map(t => <option key={t.id} value={t.id}>{t.tipo}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Día de Espera</Label>
+                        <select name="id_dia_espera" value={formData.id_dia_espera} onChange={handleChange} className="col-span-3">
+                            <option value="">Seleccione...</option>
+                            {waitingDays.map(d => <option key={d.id} value={d.id}>{d.dias}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Estado Interno</Label>
+                        <select name="internal_state_id" value={formData.internal_state_id} onChange={handleChange} className="col-span-3">
+                            <option value="">Seleccione...</option>
+                            {internalStates.map(i => <option key={i.id} value={i.id}>{i.description}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Estado Externo</Label>
+                        <select name="external_state_id" value={formData.external_state_id} onChange={handleChange} className="col-span-3">
+                            <option value="">Seleccione...</option>
+                            {externalStates.map(e => <option key={e.id} value={e.id}>{e.description}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Tipo (Catálogo)</Label>
+                        <select name="type_id" value={formData.type_id} onChange={handleChange} className="col-span-3">
+                            <option value="">Seleccione...</option>
+                            {types.map(t => <option key={t.id} value={t.id}>{t.description}</option>)}
+                        </select>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Reserva</Label>
+                        <Input type="datetime-local" name="reservation_time" value={formData.reservation_time} onChange={handleChange} className="col-span-3" />
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Atendido</Label>
+                        <Input type="datetime-local" name="attended_at" value={formData.attended_at} onChange={handleChange} className="col-span-3" />
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Derivado</Label>
+                        <Input name="derived" value={formData.derived} onChange={handleChange} className="col-span-3" />
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right">Celular</Label>
+                        <Input name="cellphone" value={formData.cellphone} onChange={handleChange} className="col-span-3" />
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button variant="ghost" onClick={onClose} disabled={uploading}>Cerrar</Button>
+                    <Button onClick={handleSubmit} disabled={uploading}>
+                        {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Guardar
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
 }

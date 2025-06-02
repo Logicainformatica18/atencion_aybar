@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
 {
-    protected $table = 'clientes'; // nombre de la tabla
-    protected $primaryKey = 'id_cliente'; // clave primaria
-    public $timestamps = false; // la tabla no tiene created_at ni updated_at
+    protected $table = 'clientes';
+    protected $primaryKey = 'id_cliente';
+    public $timestamps = false; // 👈 Esto desactiva created_at y updated_at
 
     protected $fillable = [
         'id_slin',
@@ -24,7 +24,6 @@ class Client extends Model
         'Distrito',
         'Telefono',
         'Email',
-        'id_rol',
         'clave',
         'c_clave',
         'ref_telefono1',
@@ -32,7 +31,6 @@ class Client extends Model
         'comentario',
         'canal',
         'habilitado',
+        'id_rol'
     ];
-
-
 }

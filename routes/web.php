@@ -14,6 +14,9 @@ use App\Http\Controllers\ExternalStateController;
 use App\Http\Controllers\AppointmentTypeController;
 use App\Http\Controllers\MotiveController;
 use App\Http\Controllers\WaitingDayController;
+use App\Http\Controllers\TypeController;
+
+
 
 Route::get('/', function () {
     return redirect("dashboard");
@@ -99,7 +102,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/supports/{id}', [SupportController::class, 'destroy']);
     Route::post('/supports/bulk-delete', [SupportController::class, 'bulkDelete']);
 
+
+
+
+
+ 
+
+// Vista inicial e index con Inertia
+Route::get('/clients', [ClientController::class, 'index'])->middleware(['auth', 'verified'])->name('clients.index');
+
     Route::get('/clients/search', [ClientController::class, 'searchByName']);
+// Fetch para paginación desde React
+Route::get('/clients/fetch', [ClientController::class, 'fetchPaginated'])->middleware(['auth', 'verified']);
+
+// CRUD
+Route::post('/clients', [ClientController::class, 'store'])->middleware(['auth', 'verified']);
+Route::get('/clients/{id}', [ClientController::class, 'show'])->middleware(['auth', 'verified']);
+Route::put('/clients/{id}', [ClientController::class, 'update'])->middleware(['auth', 'verified']);
+Route::delete('/clients/{id}', [ClientController::class, 'destroy'])->middleware(['auth', 'verified']);
+
+// Eliminación masiva
+Route::post('/clients/bulk-delete', [ClientController::class, 'bulkDelete'])->middleware(['auth', 'verified']);
+
+
+
+
+
     // routes/web.php
     Route::get('/areas/all', [AreaController::class, 'getAllEnabled']);
 
@@ -176,6 +204,18 @@ Route::post('/motives', [MotiveController::class, 'store']);
 Route::put('/motives/{id}', [MotiveController::class, 'update']);
 Route::delete('/motives/{id}', [MotiveController::class, 'destroy']);
 Route::post('/motives/bulk-delete', [MotiveController::class, 'bulkDelete']);
+
+
+
+
+Route::get('/types', [TypeController::class, 'index'])->name('types.index');
+Route::get('/types/fetch', [TypeController::class, 'fetchPaginated']);
+Route::get('/types/{id}', [TypeController::class, 'show']);
+Route::post('/types', [TypeController::class, 'store']);
+Route::put('/types/{id}', [TypeController::class, 'update']);
+Route::delete('/types/{id}', [TypeController::class, 'destroy']);
+Route::post('/types/bulk-delete', [TypeController::class, 'bulkDelete']);
+
 
 });
 

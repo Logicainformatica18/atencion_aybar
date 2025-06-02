@@ -82,6 +82,18 @@ export function AppSidebar() {
       href: '/motives',
       icon: Folder,
     }] : []),
+    
+       ...(hasPermission('administrar') ? [{
+      title: 'Clientes',
+      href: '/clients',
+      icon: Folder,
+    }] : []),
+
+       ...(hasPermission('administrar') ? [{
+      title: 'Tipos',
+      href: '/types',
+      icon: Folder,
+    }] : []),
     ...(hasPermission('administrar') ? [{
       title: 'Atenciones',
       href: '/supports',

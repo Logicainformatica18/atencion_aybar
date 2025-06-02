@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Client;
 use App\Models\Area;
 use App\Models\User;
+use App\Models\Motive;
+use App\Models\AppointmentType;
+use App\Models\WaitingDay;
+use App\Models\InternalState;
+use App\Models\ExternalState;
+use App\Models\Type;
+
 class Support extends Model
 {
     use HasFactory;
@@ -27,10 +34,15 @@ class Support extends Model
         'attended_at',
         'derived',
         'cellphone',
+        'id_motivos_cita',
+        'id_tipo_cita',
+        'id_dia_espera',
+        'internal_state_id',
+        'external_state_id',
+        'type_id',
     ];
 
-    // Relaciones
-
+    // Relaciones existentes
     public function area()
     {
         return $this->belongsTo(Area::class, 'area_id', 'id_area');
@@ -44,5 +56,36 @@ class Support extends Model
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id', 'id_cliente');
+    }
+
+    // Nuevas relaciones
+    public function motivoCita()
+    {
+        return $this->belongsTo(Motive::class, 'id_motivos_cita', 'id_motivos_cita');
+    }
+
+    public function tipoCita()
+    {
+        return $this->belongsTo(AppointmentType::class, 'id_tipo_cita', 'id_tipo_cita');
+    }
+
+    public function diaEspera()
+    {
+        return $this->belongsTo(WaitingDay::class, 'id_dia_espera', 'id_dias_espera');
+    }
+
+    public function internalState()
+    {
+        return $this->belongsTo(InternalState::class, 'internal_state_id');
+    }
+
+    public function externalState()
+    {
+        return $this->belongsTo(ExternalState::class, 'external_state_id');
+    }
+
+    public function supportType()
+    {
+        return $this->belongsTo(Type::class, 'type_id');
     }
 }
