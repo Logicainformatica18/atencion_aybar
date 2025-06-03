@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Events\RecordChanged;
 use App\Models\Support;
 use App\Models\Motive;
+use App\Models\Client;
+
 use App\Models\AppointmentType;
 use App\Models\WaitingDay;
 use App\Models\InternalState;
@@ -73,51 +75,65 @@ public function fetchPaginated()
 
 public function store(Request $request)
 {
-    // Crear instancia del soporte
     $support = new Support();
 
-    // Asignación con valores por defecto
     $support->subject = $request->input('subject', 'Nuevo Ticket de Soporte');
     $support->description = $request->input('description', 'Descripción del ticket de soporte');
-    $support->client_id = $request->input('client_id', 1); // Asignar un cliente por defecto
-    $support->cellphone = $request->input('cellphone', '0000000000'); // Asignar un celular por defecto
-
-    $support->priority = $request->input('priority', 'Normal');
-    $support->type = $request->input('type', 'Consulta');
-    $support->status = $request->input('status', 'Pendiente');
-    $support->reservation_time = $request->input('reservation_time', now());
-    $support->attended_at = $request->input('attended_at', now()->addHour());
+    $support->client_id = $request->input('client_id', 1);
+    $support->cellphone = $request->input('cellphone', '0000000000');
+    $support->priority = $request->input('priority');
+    $support->status = 'Pendiente';
+    $support->reservation_time = now();
+    $support->attended_at = now()->addHour();
     $support->created_by = Auth::id();
     $support->external_state_id = 1;
-    $support->internal_state_id = 1;
-    $support->type_id = $request->type_id ?? 1; 
+    $support->internal_state_id = 2;
+    $support->id_tipo_cita = 1;
+    $support->type_id = 3;
     $support->area_id = 1;
-
     $support->derived = $request->input('derived', '');
     $support->id_motivos_cita = 28;
 
-    // Log antes de guardar
-    Log::info('📥 Datos recibidos para nuevo soporte:', [
-        'request' => $request->all(),
-        'campos_seteados' => $support->toArray(),
-    ]);
-
-    // Adjuntar archivo si existe
     if ($request->hasFile('attachment')) {
         $support->attachment = fileStore($request->file('attachment'), 'uploads');
     }
 
-    // Guardar
     $support->save();
 
-    // Broadcast (si aplica)
+    // 🔄 Cargar relaciones igual que en el index
+    $support->load([
+        'area:id_area,descripcion',
+        'creator:id,firstname,lastname,names',
+        'client:id_cliente,Razon_Social',
+        'motivoCita:id_motivos_cita,nombre_motivo',
+        'tipoCita:id_tipo_cita,tipo',
+        'diaEspera:id_dias_espera,dias',
+        'internalState:id,description',
+        'externalState:id,description',
+        'supportType:id,description'
+    ]);
+
     broadcast(new RecordChanged('Support', 'created', $support->toArray()))->toOthers();
+
+
+$clientId = $request->input('client_id');
+$data = $request->only(['dni', 'cellphone', 'email', 'address']);
+
+dispatch(function () use ($clientId, $data) {
+    $client = \App\Models\Client::find($clientId);
+    if ($client) {
+        $client->updateFromSupport($data);
+    }
+});
+
+
 
     return response()->json([
         'message' => '✅ Ticket de soporte creado correctamente',
         'support' => $support,
     ]);
 }
+
 
     public function update(Request $request, $id)
     {

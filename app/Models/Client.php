@@ -33,4 +33,37 @@ class Client extends Model
         'habilitado',
         'id_rol'
     ];
+
+public function updateFromSupport(array $data)
+{
+    $updated = false;
+
+    if (!empty($data['dni'])) {
+        $this->DNI = $data['dni'];
+        $updated = true;
+    }
+
+    if (!empty($data['cellphone'])) {
+        $this->Telefono = $data['cellphone'];
+        $updated = true;
+    }
+
+    if (!empty($data['email'])) {
+        $this->Email = $data['email'];
+        $updated = true;
+    }
+
+    if (!empty($data['address'])) {
+        $this->Direccion = $data['address'];
+        $updated = true;
+    }
+
+    if ($updated) {
+        $this->save();
+    }
+
+    return $this;
+}
+
+
 }

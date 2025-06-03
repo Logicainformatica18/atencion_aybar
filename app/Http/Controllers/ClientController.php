@@ -107,15 +107,23 @@ class ClientController extends Controller
 
         return response()->json(['message' => 'Clientes eliminados en lote']);
     }
-    public function searchByName(Request $request)
+public function searchByName(Request $request)
 {
     $q = $request->input('q');
 
     return Client::where('DNI', 'like', "%$q%")
         ->orWhere('Razon_Social', 'like', "%$q%")
         ->limit(10)
-        ->get(['id_cliente as id', 'DNI as dni', 'Razon_Social as names']);
+        ->get([
+            'id_cliente as id',
+            'DNI as dni',
+            'Razon_Social as names',
+            'Telefono as cellphone',
+            'Email as email',
+            'Direccion as address'
+        ]);
 }
+
 }
 
 
