@@ -14,6 +14,9 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import ClientSearch from './clientSearch';
 import { usePage } from '@inertiajs/react';
+
+import LimitedInput from '@/components/LimitedInput';
+
 const getNowPlusHours = (plus = 0) => {
     const now = new Date();
     now.setHours(now.getHours() + plus);
@@ -51,29 +54,29 @@ export default function SupportModal({
     externalStates: any[];
     types: any[];
 }) {
-const [formData, setFormData] = useState({
-  subject: '',
-  description: '',
-  priority: 'Normal',
-  type: 'Consulta',
-  status: 'Pendiente',
-  cellphone: '',
-  dni: '',
-  email: '',
-  address: '',
-  created_by: 1,
-  client_id: 1,
-  area_id: '',
-  reservation_time: getNowPlusHours(0),
-  attended_at: getNowPlusHours(1),
-  derived: '',
-  id_motivos_cita: '',
-  id_tipo_cita: '',
-  id_dia_espera: '',
-  internal_state_id: '',
-  external_state_id: '',
-  type_id: '',
-});
+    const [formData, setFormData] = useState({
+        subject: '',
+        description: '',
+        priority: 'Normal',
+        type: 'Consulta',
+        status: 'Pendiente',
+        cellphone: '',
+        dni: '',
+        email: '',
+        address: '',
+        created_by: 1,
+        client_id: 1,
+        area_id: '',
+        reservation_time: getNowPlusHours(0),
+        attended_at: getNowPlusHours(1),
+        derived: '',
+        id_motivos_cita: '',
+        id_tipo_cita: '',
+        id_dia_espera: '',
+        internal_state_id: '',
+        external_state_id: '',
+        type_id: '',
+    });
 
 
     const [clientQuery, setClientQuery] = useState('');
@@ -156,60 +159,113 @@ const [formData, setFormData] = useState({
 
 
 
-              <div className="grid grid-cols-1 gap-4">
-  <div className="grid grid-cols-4 items-center w-full">
-    <Label className="text-left text-sm">Cliente :</Label>
+                <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-4 items-center w-full">
+                        <Label className="text-left text-sm">Cliente :</Label>
+                        <div className="col-span-3">
+                            <ClientSearch
+                                query={clientQuery}
+                                setQuery={setClientQuery}
+                                onSelect={(client) => {
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        client_id: client.id,
+                                        cellphone: client.cellphone || '',
+                                        dni: client.dni || '',
+                                        email: client.email || '',
+                                        address: client.address || '',
+                                    }));
+                                    setClientQuery(client.names);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div className="grid grid-cols-4 gap-4">
+                    <div className="grid grid-cols-4 items-left ">
+                        <Label className="text-left  ">Dni</Label>
+
+                    </div>
+                    <div className="grid grid-cols-1 items-left ">
+
+                        <LimitedInput
+                            name="dni"
+                            label="DNI"
+                            value={formData.dni}
+                            onChange={handleChange}
+                            maxLength={12}
+                            inputClassName="col-span-1 text-sm h-7 px-2 py-1 rounded-md w-full" // ✅ clases dinámicas aquí
+                        />
+
+                    </div>
+                    <div className="grid grid-cols-1 items-center ">
+                        <Label className="text-center col-span-1">Celular</Label>
+
+
+
+                    </div>
+                    <div className="grid grid-cols-1 items-center ">
+                        <LimitedInput
+                            name="cellphone"
+                            label="Celular"
+                            value={formData.cellphone}
+                            onChange={handleChange}
+                            maxLength={11}
+                            inputClassName=" col-span-1 text-sm h-7 px-2 py-1 rounded-md" // ✅ clases dinámicas aquí
+                        />
+
+                    </div>
+                </div>
+
+
+
+             <div className="grid grid-cols-4 items-center gap-2">
+  <Label className="text-left col-span-1">Email</Label>
+
+  <div className="col-span-3">
+    <LimitedInput
+      name="email"
+      value={formData.email}
+      onChange={handleChange}
+      maxLength={80}
+      inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
+    />
+  </div>
+</div>
+
+
+               <div className="grid grid-cols-4 items-center gap-2">
+  <Label className="text-left col-span-1">Dirección</Label>
+
+  <div className="col-span-3">
+    <LimitedInput
+      name="address"
+      value={formData.address}
+      onChange={handleChange}
+      maxLength={200}
+      inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
+    />
+  </div>
+</div>
+
+                <div className="grid grid-cols-1">
+  <div className="grid grid-cols-4 items-center gap-4">
+    <Label className="text-left col-span-1">Asunto</Label>
+
     <div className="col-span-3">
-      <ClientSearch
-        query={clientQuery}
-        setQuery={setClientQuery}
-        onSelect={(client) => {
-          setFormData((prev) => ({
-            ...prev,
-            client_id: client.id,
-            cellphone: client.cellphone || '',
-            dni: client.dni || '',
-            email: client.email || '',
-            address: client.address || '',
-          }));
-          setClientQuery(client.names);
-        }}
+      <LimitedInput
+        name="subject"
+        value={formData.subject}
+        onChange={handleChange}
+        maxLength={150}
+        inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
       />
     </div>
   </div>
 </div>
 
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="grid grid-cols-4 items-left ">
-                        <Label className="text-left col-span-2">Dni</Label>
-                        <Input name="dni" value={formData.dni} onChange={handleChange} className="col-span-2 text-sm h-7 px-2 py-1 rounded-md " />
-                    </div>
-                    <div className="grid grid-cols-4 items-center ">
-                        <Label className="text-left">Celular</Label>
-                        <Input name="cellphone" value={formData.cellphone} onChange={handleChange} className={inputClass} />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-4 items-center ">
-                    <Label className="text-left">Email</Label>
-                    <Input name="email" value={formData.email} onChange={handleChange} className={inputClass} />
-                </div>
-                <div className="grid grid-cols-4 items-center ">
-                    <Label className="text-left">Dirección</Label>
-                    <Input name="address" value={formData.address} onChange={handleChange} className={inputClass} />
-                </div>
-                <div className="grid grid-cols-1">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-left">Asunto</Label>
-                        <Input
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            className={inputClass}
-                        />
-                    </div>
-                </div>
                 <div className="grid grid-cols-4 items-start gap-4">
                     <Label className="text-left pt-2">Descripción</Label>
                     <textarea
@@ -221,27 +277,27 @@ const [formData, setFormData] = useState({
                     />
                 </div>
 
-  <div className="grid grid-cols-4 items-center gap-4">
-                        <Label className="text-left">Prioridad</Label>
-                        <select
-                            name="priority"
-                            value={formData.priority}
-                            onChange={handleChange}
-                            className="col-span-3 border rounded"
-                        >
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-left">Prioridad</Label>
+                    <select
+                        name="priority"
+                        value={formData.priority}
+                        onChange={handleChange}
+                        className="col-span-3 border rounded"
+                    >
 
-                            <option value="Urgente">Urgente</option>
-                            <option value="Moderado">Moderado</option>
-                            <option value="Normal">Normal</option>
-                            <option value="Normal">Baja Prioridad</option>
-                        </select>
-                    </div>
-
-
+                        <option value="Urgente">Urgente</option>
+                        <option value="Moderado">Moderado</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Normal">Baja Prioridad</option>
+                    </select>
+                </div>
 
 
 
-                 <div className="grid grid-cols-2 gap-4 mt-2">
+
+
+                <div className="grid grid-cols-2 gap-4 mt-2">
 
                     {canEditAdvancedFields && (
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -378,20 +434,25 @@ const [formData, setFormData] = useState({
                         </div>
                     )}
 
-           
+
                 </div>
-         {canEditAdvancedFields && (
-            
-                       <div className="grid grid-cols-4 items-start gap-4">
-                            <Label className="text-left">Derivado</Label>
-                            <Input
-                                name="derived"
-                                value={formData.derived}
-                                onChange={handleChange}
-                                className="col-span-3 text-sm h-7 px-2 py-1 rounded-md"
-                            />
-                        </div>
-                    )}
+                {canEditAdvancedFields && (
+
+                  <div className="grid grid-cols-4 items-start gap-4">
+  <Label className="text-left col-span-1">Derivado</Label>
+
+  <div className="col-span-3">
+    <LimitedInput
+      name="derived"
+      value={formData.derived}
+      onChange={handleChange}
+      maxLength={150}
+      inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
+    />
+  </div>
+</div>
+
+                )}
                 <DialogFooter>
                     <Button variant="ghost" onClick={onClose} disabled={uploading}>Cerrar</Button>
                     <Button onClick={handleSubmit} disabled={uploading}>
