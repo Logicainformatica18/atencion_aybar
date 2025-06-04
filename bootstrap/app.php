@@ -32,11 +32,17 @@ return Application::configure(basePath: dirname(__DIR__))
             ]
         );
 
+           // 👇 Aquí agregas TrustProxies como middleware global
+    $middleware->append([
+        \App\Http\Middleware\TrustProxies::class,
+    ]);
+    
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
+        
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Manejo de errores si lo necesitas
