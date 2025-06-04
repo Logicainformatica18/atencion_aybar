@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useEffect } from 'react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -28,19 +28,34 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         remember: false,
     });
 
+    useEffect(() => {
+        console.log('🌐 Ziggy location:', window.location.origin);
+    }, []);
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+
         post(route('login'), {
-            onFinish: () => reset('password'),
+            onFinish: () => {
+                console.log('✅ Post login: window.location.href =', window.location.href);
+
+                // 🔒 Si por alguna razón el navegador tiene HTTP en la barra de direcciones
+                if (window.location.protocol === 'http:') {
+                    const secureUrl = window.location.href.replace('http:', 'https:');
+                    console.log('🔁 Redirigiendo a HTTPS:', secureUrl);
+                    window.location.href = secureUrl;
+                }
+
+                reset('password');
+            },
         });
     };
 
     return (
         <div
-        className="min-h-screen flex items-center justify-center bg-cover bg-center"
-        style={{ backgroundImage: "url('/logo/f_login.png')" }}
-      >
-
+            className="min-h-screen flex items-center justify-center bg-cover bg-center"
+            style={{ backgroundImage: "url('/logo/f_login.png')" }}
+        >
             <div className="bg-white shadow-md rounded-xl p-10 w-full max-w-md">
                 <div className="flex justify-center mb-4">
                     <img src="../../logo/1.png" alt="Logo" className="w-32" />
@@ -85,7 +100,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             checked={data.remember}
                             onClick={() => setData('remember', !data.remember)}
                         />
-                        <Label htmlFor="remember" className="text-sm text-[#000] hover:text-[#F6A42C]">Recordarme</Label>
+                        <Label htmlFor="remember" className="text-sm text-[#000] hover:text-[#F6A42C]">
+                            Recordarme
+                        </Label>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -108,12 +125,14 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
                 <div className="text-center text-sm text-gray-500 mt-6">
                     ¿No tienes cuenta?{' '}
-                    <TextLink href={route('register')} className='text-[#F6A42C] font-semibold'>
+                    <TextLink href={route('register')} className="text-[#F6A42C] font-semibold">
                         Regístrate
                     </TextLink>
                 </div>
 
-                {status && <div className="mt-4 text-center text-sm font-medium text-green-600">{status}</div>}
+                {status && (
+                    <div className="mt-4 text-center text-sm font-medium text-green-600">{status}</div>
+                )}
             </div>
         </div>
     );

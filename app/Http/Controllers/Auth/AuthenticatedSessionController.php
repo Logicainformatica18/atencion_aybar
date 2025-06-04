@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -33,7 +34,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Obtener URL de destino desde redirect()->intended(...)
+        $intendedUrl = redirect()->intended(route('dashboard', absolute: false))->getTargetUrl();
+
+        // Forzar HTTPS si la URL es HTTP
+        if (str_starts_with($intendedUrl, 'http://')) {
+            $intendedUrl = preg_replace('/^http:/', 'https:', $intendedUrl);
+        }
+
+        // Log para depuración
+        Log::info('🔁 Redirigiendo a (forzado): ' . $intendedUrl);
+
+        return redirect()->to($intendedUrl);
     }
 
     /**
