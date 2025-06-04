@@ -16,7 +16,7 @@ import ClientSearch from './clientSearch';
 import { usePage } from '@inertiajs/react';
 
 import LimitedInput from '@/components/LimitedInput';
-
+import LimitedTextarea from '@/components/LimitedTextarea';
 const getNowPlusHours = (plus = 0) => {
     const now = new Date();
     now.setHours(now.getHours() + plus);
@@ -266,16 +266,20 @@ export default function SupportModal({
   </div>
 </div>
 
-                <div className="grid grid-cols-4 items-start gap-4">
-                    <Label className="text-left pt-2">Descripción</Label>
-                    <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="col-span-3 border rounded px-3 py-2 text-sm"
-                        rows={4}
-                    />
-                </div>
+             <div className="grid grid-cols-4 items-start gap-4">
+  <Label className="text-left col-span-1">Descripción</Label>
+
+  <div className="col-span-3">
+    <LimitedTextarea
+      name="description"
+      value={formData.description}
+      onChange={handleChange}
+      maxLength={800} // puedes ajustar el límite si deseas
+      textareaClassName="w-full border rounded px-3 py-2 text-sm"
+    />
+  </div>
+</div>
+
 
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label className="text-left">Prioridad</Label>
