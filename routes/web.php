@@ -16,6 +16,7 @@ use App\Http\Controllers\MotiveController;
 use App\Http\Controllers\WaitingDayController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\ChatMessageController;
+use App\Http\Controllers\ProjectController;
 
 
 Route::get('/', function () {
@@ -106,7 +107,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
- 
+
 
 // Vista inicial e index con Inertia
 Route::get('/clients', [ClientController::class, 'index'])->middleware(['auth', 'verified'])->name('clients.index');
@@ -215,6 +216,23 @@ Route::post('/types', [TypeController::class, 'store']);
 Route::put('/types/{id}', [TypeController::class, 'update']);
 Route::delete('/types/{id}', [TypeController::class, 'destroy']);
 Route::post('/types/bulk-delete', [TypeController::class, 'bulkDelete']);
+
+
+
+
+
+
+Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+Route::get('/projects/fetch', [ProjectController::class, 'fetchPaginated']);
+Route::get('/projects/{id}', [ProjectController::class, 'show']);
+Route::post('/projects', [ProjectController::class, 'store']);
+Route::put('/projects/{id}', [ProjectController::class, 'update']);
+Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
+Route::post('/projects/bulk-delete', [ProjectController::class, 'bulkDelete']);
+
+
+
+
 
       Route::get('/chat', [ChatMessageController::class, 'index'])->name('chat.index');
     Route::get('/chat/messages', [ChatMessageController::class, 'fetch'])->name('chat.fetch');

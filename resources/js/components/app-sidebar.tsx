@@ -79,6 +79,12 @@ export function AppSidebar() {
       icon: Folder,
     }] : []),
 
+    // Otros módulos (admin o atc)
+    ...((isAdmin || isATC) ? [{
+      title: 'Proyectos',
+      href: '/projects',
+      icon: Folder,
+    }] : []),
     ...((isAdmin || isATC) ? [{
       title: 'Estados Externos',
       href: '/external-states',
