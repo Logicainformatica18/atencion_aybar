@@ -1,7 +1,29 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePage } from '@inertiajs/react';
 import axios from 'axios';
-import echo from '@/lib/echo';
+import Echo from 'laravel-echo';
+
+// 👇 configuración sin @laravel/echo-react
+declare global {
+  interface Window {
+    Echo: Echo;
+  }
+}
+
+if (!window.Echo) {
+  window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: Number(import.meta.env.VITE_REVERB_PORT),
+    wssPort: Number(import.meta.env.VITE_REVERB_PORT),
+    forceTLS: false,
+    enabledTransports: ['ws'],
+    authEndpoint: '', // 👈 evita que intente autenticar
+  });
+}
+
+console.log('✅ Echo configurado manualmente con canal público');
 
 interface Message {
   id: number;
@@ -31,17 +53,31 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      loadMessages();
+    if (!isOpen) return;
 
-      const channel = echo.channel('chat-room');
+    loadMessages();
+
+    try {
+      if (!window.Echo || typeof window.Echo.channel !== 'function') {
+        console.warn('❌ Echo no está disponible o channel no es función');
+        return;
+      }
+
+      console.log('📡 Subscribing to chat-room...');
+
+      const channel = window.Echo.channel('chat-room');
+
       channel.listen('.chat.message.sent', (e: Message) => {
+        console.log('💬 Nuevo mensaje:', e);
         setMessages((prev) => [...prev, e]);
       });
 
       return () => {
-        echo.leave('chat-room');
+        window.Echo.leave('chat-room');
+        console.log('👋 Abandonado canal chat-room');
       };
+    } catch (err) {
+      console.error('❌ Error en conexión a WebSocket chat-room:', err);
     }
   }, [isOpen]);
 

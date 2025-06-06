@@ -27,4 +27,10 @@ export default defineConfig({
             '@': resolve(__dirname, 'resources/js'),
         },
     },
+    server: {
+  host: 'localhost',
+  port: 8000,
+  https: false,
+},
+
 });

@@ -2,6 +2,10 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
+
+
+
+
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -22,10 +26,10 @@ class RecordChanged implements ShouldBroadcast
         $this->data = $data;
     }
 
-    public function broadcastOn(): Channel
-    {
-        return new Channel('supports');
-    }
+public function broadcastOn(): Channel
+{
+    return new Channel('supports');
+}
 
     public function broadcastAs(): string
     {

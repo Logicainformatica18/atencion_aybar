@@ -14,3 +14,6 @@ Broadcast::channel('chat-room', function ($user) {
         'role_name' => $user->getRoleNames()->first(),
     ];
 });
+
+
+ 

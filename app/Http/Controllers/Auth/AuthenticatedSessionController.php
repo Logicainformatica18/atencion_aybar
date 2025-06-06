@@ -38,9 +38,9 @@ class AuthenticatedSessionController extends Controller
         $intendedUrl = redirect()->intended(route('dashboard', absolute: false))->getTargetUrl();
 
         // Forzar HTTPS si la URL es HTTP
-        if (str_starts_with($intendedUrl, 'http://')) {
-            $intendedUrl = preg_replace('/^http:/', 'https:', $intendedUrl);
-        }
+        // if (str_starts_with($intendedUrl, 'http://')) {
+        //     $intendedUrl = preg_replace('/^http:/', 'https:', $intendedUrl);
+        // }
 
         // Log para depuración
         Log::info('🔁 Redirigiendo a (forzado): ' . $intendedUrl);

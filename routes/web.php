@@ -17,7 +17,7 @@ use App\Http\Controllers\WaitingDayController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\ProjectController;
-
+ 
 
 Route::get('/', function () {
     return redirect("dashboard");
@@ -231,8 +231,7 @@ Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
 Route::post('/projects/bulk-delete', [ProjectController::class, 'bulkDelete']);
 
 
-
-
+ 
 
       Route::get('/chat', [ChatMessageController::class, 'index'])->name('chat.index');
     Route::get('/chat/messages', [ChatMessageController::class, 'fetch'])->name('chat.fetch');
@@ -262,4 +261,14 @@ Route::get('/debug-broadcast', function () {
         'reverb_config' => config('broadcasting.connections.reverb'),
         'pusher_config' => config('broadcasting.connections.pusher'),
     ]);
+});
+
+
+ Route::get('/ws_pueba', function () {
+    broadcast(new \App\Events\RecordChanged('Support', 'created', [
+        'id' => 998,
+        'subject' => 'Echo Final OK'
+    ]));
+
+    return response()->json(['success' => true, 'message' => 'Evento emitido']);
 });
