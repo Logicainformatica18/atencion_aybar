@@ -4,9 +4,20 @@ import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SupportModal from './modal';
-import echo from '@/lib/echo';
 import SupportTable from './table';
 import ChatWidget from '@/components/ChatWidget';
+import Echo from 'laravel-echo';
+
+const echo = new Echo({
+  broadcaster: 'reverb',
+  key: import.meta.env.VITE_REVERB_APP_KEY,
+  wsHost: import.meta.env.VITE_REVERB_HOST || '127.0.0.1',
+  wsPort: Number(import.meta.env.VITE_REVERB_PORT || 8080),
+  wssPort: Number(import.meta.env.VITE_REVERB_PORT || 8080),
+  forceTLS: false,
+  enabledTransports: ['ws'],
+});
+
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Atenciones', href: '/supports' },
 ];
@@ -59,7 +70,7 @@ export default function Supports() {
     internalStates,
     externalStates,
     types,
-    projects
+    projects,
   } = usePage<{
     supports: Pagination<Support>;
     motives: Option[];
@@ -100,39 +111,42 @@ export default function Supports() {
     }
   };
 
-useEffect(() => {
-  if (!echo || typeof echo.channel !== 'function') {
-    console.error('❌ Echo no está inicializado correctamente');
-    return;
-  }
+ useEffect(() => {
+  console.log('▶️ Echo cargado:', echo);
 
-  const channel = echo.channel('supports');
+  try {
+    const channel = echo.channel('supports');
 
-  channel.listen('.record.changed', (e: any) => {
-    console.log('📡 Evento recibido:', e);
-    if (e.model === 'Support') {
-      switch (e.action) {
-        case 'created':
-          setSupports((prev) => {
-            const exists = prev.some((s) => s.id === e.data.id);
-            return exists ? prev : [e.data, ...prev];
-          });
-          break;
-        case 'updated':
-          setSupports((prev) => prev.map((s) => (s.id === e.data.id ? e.data : s)));
-          break;
-        case 'deleted':
-          setSupports((prev) => prev.filter((s) => s.id !== e.data.id));
-          break;
+    channel.listen('.record.changed', (e: any) => {
+      console.log('📡 Evento recibido:', e);
+
+      if (e.model === 'Support') {
+        switch (e.action) {
+          case 'created':
+            setSupports((prev) => {
+              const exists = prev.some((s) => s.id === e.data.id);
+              return exists ? prev : [e.data, ...prev];
+            });
+            break;
+          case 'updated':
+            setSupports((prev) =>
+              prev.map((s) => (s.id === e.data.id ? e.data : s))
+            );
+            break;
+          case 'deleted':
+            setSupports((prev) => prev.filter((s) => s.id !== e.data.id));
+            break;
+        }
       }
-    }
-  });
+    });
+  } catch (error) {
+    console.error('❌ Error al suscribirse a canal supports:', error);
+  }
 
   return () => {
     echo.leave('supports');
   };
 }, []);
-
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -173,10 +187,10 @@ useEffect(() => {
           internalStates={internalStates}
           externalStates={externalStates}
           types={types}
-            projects={projects}
+          projects={projects}
         />
       )}
-  <ChatWidget />
+      <ChatWidget />
     </AppLayout>
   );
 }

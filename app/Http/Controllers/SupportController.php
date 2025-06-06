@@ -6,7 +6,7 @@ use App\Events\RecordChanged;
 use App\Models\Support;
 use App\Models\Motive;
 use App\Models\Client;
-use App\Models\Project; 
+use App\Models\Project;
 use App\Models\AppointmentType;
 use App\Models\WaitingDay;
 use App\Models\InternalState;
@@ -118,7 +118,7 @@ public function store(Request $request)
         'supportType:id,description'
     ]);
 
-    broadcast(new RecordChanged('Support', 'created', $support->toArray()))->toOthers();
+   // broadcast(new RecordChanged('Support', 'created', $support->toArray()))->toOthers();
 
 
 $clientId = $request->input('client_id');
@@ -153,7 +153,7 @@ dispatch(function () use ($clientId, $data) {
 
         $support->save();
 
-        broadcast(new RecordChanged('Support', 'updated', $support->toArray()))->toOthers();
+    //    broadcast(new RecordChanged('Support', 'updated', $support->toArray()))->toOthers();
 
         return response()->json([
             'message' => '✅ Ticket de soporte actualizado correctamente',
@@ -183,7 +183,7 @@ dispatch(function () use ($clientId, $data) {
         $support = Support::findOrFail($id);
         $support->delete();
 
-        broadcast(new RecordChanged('Support', 'deleted', ['id' => $support->id]));
+     //   broadcast(new RecordChanged('Support', 'deleted', ['id' => $support->id]));
 
         return response()->json(['success' => true]);
     }
@@ -193,9 +193,9 @@ dispatch(function () use ($clientId, $data) {
         $ids = $request->input('ids', []);
         Support::whereIn('id', $ids)->delete();
 
-        foreach ($ids as $id) {
-            broadcast(new RecordChanged('Support', 'deleted', ['id' => $id]));
-        }
+        // foreach ($ids as $id) {
+        //     broadcast(new RecordChanged('Support', 'deleted', ['id' => $id]));
+        // }
 
         return response()->json(['message' => 'Tickets eliminados correctamente']);
     }

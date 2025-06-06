@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel; // ✅ Canal público
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Queue\SerializesModels;
@@ -20,11 +20,16 @@ class MessageSent implements ShouldBroadcast
 
     public function broadcastOn(): Channel
     {
-        return new Channel('chat'); // ✅ público
+        return new Channel('chat');
     }
 
     public function broadcastAs(): string
     {
         return 'message.sent';
+    }
+
+    public function broadcastConnection(): ?string
+    {
+        return 'reverb';
     }
 }

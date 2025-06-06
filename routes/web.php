@@ -241,7 +241,8 @@ Route::post('/projects/bulk-delete', [ProjectController::class, 'bulkDelete']);
 
 use App\Http\Controllers\WebSocketTestController;
 
-Route::get('/ws/test', [WebSocketTestController::class, 'send']);
+ Route::get('/ws/test', [WebSocketTestController::class, 'send']);
+
 
 
 require __DIR__ . '/settings.php';
@@ -254,3 +255,11 @@ agregar modulo usuarios
 en el formulario de articulos que busque el producto y usuario tipo receptor
 
 */
+
+Route::get('/debug-broadcast', function () {
+    return response()->json([
+        'broadcast_driver' => config('broadcasting.default'),
+        'reverb_config' => config('broadcasting.connections.reverb'),
+        'pusher_config' => config('broadcasting.connections.pusher'),
+    ]);
+});

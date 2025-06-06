@@ -15,9 +15,6 @@ class RecordChanged implements ShouldBroadcast
     public string $action;
     public array $data;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct(string $model, string $action, array $data)
     {
         $this->model = $model;
@@ -25,17 +22,11 @@ class RecordChanged implements ShouldBroadcast
         $this->data = $data;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     */
     public function broadcastOn(): Channel
     {
-        return new Channel('supports'); // canal público llamado "supports"
+        return new Channel('supports');
     }
 
-    /**
-     * Nombre del evento que será recibido en el frontend.
-     */
     public function broadcastAs(): string
     {
         return 'record.changed';
