@@ -28,6 +28,9 @@ type Support = {
   area_id?: number;
   created_by?: number;
   client_id?: number;
+  project_id?: number;
+  manzana?: string;
+  lote?: string;
 };
 
 type Option = {
@@ -56,6 +59,7 @@ export default function Supports() {
     internalStates,
     externalStates,
     types,
+    projects
   } = usePage<{
     supports: Pagination<Support>;
     motives: Option[];
@@ -64,6 +68,7 @@ export default function Supports() {
     internalStates: Option[];
     externalStates: Option[];
     types: Option[];
+    projects: Option[];
   }>().props;
 
   const [supports, setSupports] = useState<Support[]>(initialPagination.data);
@@ -161,6 +166,7 @@ export default function Supports() {
           internalStates={internalStates}
           externalStates={externalStates}
           types={types}
+            projects={projects}
         />
       )}
   <ChatWidget />

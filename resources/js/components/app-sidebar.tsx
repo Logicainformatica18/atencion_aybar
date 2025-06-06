@@ -59,7 +59,7 @@ export function AppSidebar() {
     }] : []),
 
     // Clientes (admin o reserva)
-    ...((isAdmin || isReserva) ? [{
+    ...((isAdmin || isATC) ? [{
       title: 'Clientes',
       href: '/clients',
       icon: Folder,

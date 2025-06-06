@@ -42,6 +42,8 @@ export default function SupportModal({
     internalStates,
     externalStates,
     types,
+    projects,
+
 }: {
     open: boolean;
     onClose: () => void;
@@ -53,6 +55,7 @@ export default function SupportModal({
     internalStates: any[];
     externalStates: any[];
     types: any[];
+    projects: any[];
 }) {
     const [formData, setFormData] = useState({
         subject: '',
@@ -76,6 +79,9 @@ export default function SupportModal({
         internal_state_id: '',
         external_state_id: '',
         type_id: '',
+        project_id: '',
+        manzana: '',
+        lote: '',
     });
 
 
@@ -221,64 +227,123 @@ export default function SupportModal({
 
 
 
-             <div className="grid grid-cols-4 items-center gap-2">
-  <Label className="text-left col-span-1">Email</Label>
+                <div className="grid grid-cols-4 items-center gap-2">
+                    <Label className="text-left col-span-1">Email</Label>
 
-  <div className="col-span-3">
-    <LimitedInput
-      name="email"
-      value={formData.email}
-      onChange={handleChange}
-      maxLength={80}
-      inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
-    />
-  </div>
-</div>
+                    <div className="col-span-3">
+                        <LimitedInput
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            maxLength={80}
+                            inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
+                        />
+                    </div>
+                </div>
 
 
-               <div className="grid grid-cols-4 items-center gap-2">
-  <Label className="text-left col-span-1">Dirección</Label>
+                <div className="grid grid-cols-4 items-center gap-2">
+                    <Label className="text-left col-span-1">Dirección</Label>
 
-  <div className="col-span-3">
-    <LimitedInput
-      name="address"
-      value={formData.address}
-      onChange={handleChange}
-      maxLength={200}
-      inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
-    />
-  </div>
-</div>
+                    <div className="col-span-3">
+                        <LimitedInput
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            maxLength={200}
+                            inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
+                        />
+                    </div>
+                </div>
 
                 <div className="grid grid-cols-1">
-  <div className="grid grid-cols-4 items-center gap-4">
-    <Label className="text-left col-span-1">Asunto</Label>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-left col-span-1">Asunto</Label>
 
-    <div className="col-span-3">
-      <LimitedInput
-        name="subject"
-        value={formData.subject}
-        onChange={handleChange}
-        maxLength={150}
-        inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
-      />
-    </div>
-  </div>
-</div>
+                        <div className="col-span-3">
+                            <LimitedInput
+                                name="subject"
+                                value={formData.subject}
+                                onChange={handleChange}
+                                maxLength={150}
+                                inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
+                            />
+                        </div>
+                    </div>
+                </div>
 
-             <div className="grid grid-cols-4 items-start gap-4">
-  <Label className="text-left col-span-1">Descripción</Label>
+                <div className="grid grid-cols-4 items-start gap-4">
+                    <Label className="text-left col-span-1">Descripción</Label>
 
-  <div className="col-span-3">
-    <LimitedTextarea
-      name="description"
-      value={formData.description}
-      onChange={handleChange}
-      maxLength={800} // puedes ajustar el límite si deseas
-      textareaClassName="w-full border rounded px-3 py-2 text-sm"
-    />
-  </div>
-</div>
+                    <div className="col-span-3">
+                        <LimitedTextarea
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            maxLength={800} // puedes ajustar el límite si deseas
+                            textareaClassName="w-full border rounded px-3 py-2 text-sm"
+                        />
+                    </div>
+                </div>
+
+<div className="grid grid-cols-4 gap-4">
+                    <div className="grid grid-cols-4 items-left ">
+                        <Label className="text-left  ">Manzana</Label>
+
+                    </div>
+                    <div className="grid grid-cols-1 items-left ">
+
+                        <LimitedInput
+                            name="manzana"
+                            label="Manzana"
+                            value={formData.manzana}
+                            onChange={handleChange}
+                            maxLength={12}
+                            inputClassName="col-span-1 text-sm h-7 px-2 py-1 rounded-md w-full" // ✅ clases dinámicas aquí
+                        />
+
+                    </div>
+                    <div className="grid grid-cols-1 items-center ">
+                        <Label className="text-center col-span-1">Lote</Label>
+
+
+
+                    </div>
+                    <div className="grid grid-cols-1 items-center ">
+                        <LimitedInput
+                            name="lote"
+                            label="Lote"
+                            value={formData.lote}
+                            onChange={handleChange}
+                            maxLength={11}
+                            inputClassName=" col-span-1 text-sm h-7 px-2 py-1 rounded-md" // ✅ clases dinámicas aquí
+                        />
+
+                    </div>
+                </div>
+
+
+
+                <div className="grid grid-cols-4 items-start gap-4">
+                    <Label className="text-left col-span-1">Proyecto</Label>
+
+                    <div className="col-span-3">
+                        <select
+                            name="project_id"
+                            value={formData.project_id}
+                            onChange={handleChange}
+                            className="w-full border rounded px-3 py-2 text-sm"
+                        >
+                              <option value="">Seleccione un proyecto...</option> {/* <-- Esta línea ayuda a evitar autoselección */}
+                            {projects.map((p) => (
+                                <option key={p.id_proyecto} value={p.id_proyecto}>
+                                    {p.descripcion}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
 
 
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -416,6 +481,9 @@ export default function SupportModal({
                         </div>
                     )}
 
+
+
+
                     {canEditAdvancedFields && (
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-left">Tipo (Catálogo)</Label>
@@ -424,7 +492,12 @@ export default function SupportModal({
                                 {types.map(t => <option key={t.id} value={t.id}>{t.description}</option>)}
                             </select>
                         </div>
+
+
                     )}
+
+
+
                     {canEditAdvancedFields && (
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-left">Reserva</Label>
@@ -442,19 +515,19 @@ export default function SupportModal({
                 </div>
                 {canEditAdvancedFields && (
 
-                  <div className="grid grid-cols-4 items-start gap-4">
-  <Label className="text-left col-span-1">Derivado</Label>
+                    <div className="grid grid-cols-4 items-start gap-4">
+                        <Label className="text-left col-span-1">Derivado</Label>
 
-  <div className="col-span-3">
-    <LimitedInput
-      name="derived"
-      value={formData.derived}
-      onChange={handleChange}
-      maxLength={150}
-      inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
-    />
-  </div>
-</div>
+                        <div className="col-span-3">
+                            <LimitedInput
+                                name="derived"
+                                value={formData.derived}
+                                onChange={handleChange}
+                                maxLength={150}
+                                inputClassName="w-full text-sm h-7 px-2 py-1 rounded-md"
+                            />
+                        </div>
+                    </div>
 
                 )}
                 <DialogFooter>

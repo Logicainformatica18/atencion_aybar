@@ -6,7 +6,7 @@ use App\Events\RecordChanged;
 use App\Models\Support;
 use App\Models\Motive;
 use App\Models\Client;
-
+use App\Models\Project; 
 use App\Models\AppointmentType;
 use App\Models\WaitingDay;
 use App\Models\InternalState;
@@ -40,7 +40,7 @@ class SupportController extends Controller
     $internalStates = InternalState::select('id', 'description')->get();
     $externalStates = ExternalState::select('id', 'description')->get();
     $types = Type::select('id', 'description')->get();
-
+        $projects = Project::select('id_proyecto', 'descripcion')->get();
     return Inertia::render('supports/index', [
         'supports' => $supports,
         'motives' => $motives,
@@ -49,6 +49,7 @@ class SupportController extends Controller
         'internalStates' => $internalStates,
         'externalStates' => $externalStates,
         'types' => $types,
+        'projects' => $projects
     ]);
 }
 
@@ -93,6 +94,10 @@ public function store(Request $request)
     $support->area_id = 1;
     $support->derived = $request->input('derived', '');
     $support->id_motivos_cita = 28;
+    $support->project_id = $request->project_id;
+    $support->Manzana = $request->Manzana;
+    $support->Lote = $request->Lote;
+
 
     if ($request->hasFile('attachment')) {
         $support->attachment = fileStore($request->file('attachment'), 'uploads');

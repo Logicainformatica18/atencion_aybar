@@ -40,6 +40,9 @@ class Support extends Model
         'internal_state_id',
         'external_state_id',
         'type_id',
+        'project_id',
+        'Manzana',
+        'Lote'
     ];
 
     // Relaciones existentes
