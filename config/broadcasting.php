@@ -42,7 +42,8 @@ return [
                 'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
             ],
             'client_options' => [
-                // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
+               'verify' => false, // 👈 Esto evita el error del certificado autofirmado
+                //  'base_uri' => env('APP_URL'), // 👈 forzar que use el puerto 8000
             ],
         ],
 
@@ -60,7 +61,7 @@ return [
                 'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
             ],
             'client_options' => [
-                // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
+
             ],
         ],
 

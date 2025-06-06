@@ -100,32 +100,39 @@ export default function Supports() {
     }
   };
 
-  useEffect(() => {
-    const channel = echo.channel('supports');
+useEffect(() => {
+  if (!echo || typeof echo.channel !== 'function') {
+    console.error('❌ Echo no está inicializado correctamente');
+    return;
+  }
 
-    channel.listen('.record.changed', (e: any) => {
-      if (e.model === 'Support') {
-        switch (e.action) {
-          case 'created':
-            setSupports((prev) => {
-              const exists = prev.some((s) => s.id === e.data.id);
-              return exists ? prev : [e.data, ...prev];
-            });
-            break;
-          case 'updated':
-            setSupports((prev) => prev.map((s) => (s.id === e.data.id ? e.data : s)));
-            break;
-          case 'deleted':
-            setSupports((prev) => prev.filter((s) => s.id !== e.data.id));
-            break;
-        }
+  const channel = echo.channel('supports');
+
+  channel.listen('.record.changed', (e: any) => {
+    console.log('📡 Evento recibido:', e);
+    if (e.model === 'Support') {
+      switch (e.action) {
+        case 'created':
+          setSupports((prev) => {
+            const exists = prev.some((s) => s.id === e.data.id);
+            return exists ? prev : [e.data, ...prev];
+          });
+          break;
+        case 'updated':
+          setSupports((prev) => prev.map((s) => (s.id === e.data.id ? e.data : s)));
+          break;
+        case 'deleted':
+          setSupports((prev) => prev.filter((s) => s.id !== e.data.id));
+          break;
       }
-    });
+    }
+  });
 
-    return () => {
-      echo.leave('supports');
-    };
-  }, []);
+  return () => {
+    echo.leave('supports');
+  };
+}, []);
+
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
